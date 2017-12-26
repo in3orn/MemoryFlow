@@ -1,0 +1,199 @@
+{ 
+	"Name": "asd",
+	"Levels": [
+	{
+		"Difficulty": 301,
+		"HorizontalFields": [
+			{ "Fields": [0, 0, 1] },
+			{ "Fields": [1, 1, 0] },
+			{ "Fields": [0, 0, 0] },
+			{ "Fields": [1, 1, 0] }
+		],
+		"VerticalFields": [
+			{ "Fields": [1, 0, 1, 1] },
+			{ "Fields": [1, 0, 0, 1] },
+			{ "Fields": [1, 0, 0, 1] }
+		]
+	},
+	{
+		"Difficulty": 302,
+		"HorizontalFields": [
+			{ "Fields": [0, 1, 1] },
+			{ "Fields": [0, 1, 0] },
+			{ "Fields": [1, 0, 0] },
+			{ "Fields": [1, 0, 1] }
+		],
+		"VerticalFields": [
+			{ "Fields": [1, 1, 0, 1] },
+			{ "Fields": [1, 1, 1, 1] },
+			{ "Fields": [1, 0, 1, 0] }
+		]
+	},
+	{
+		"Difficulty": 303,
+		"HorizontalFields": [
+			{ "Fields": [1, 1, 1] },
+			{ "Fields": [0, 1, 1] },
+			{ "Fields": [0, 1, 0] },
+			{ "Fields": [1, 0, 1] }
+		],
+		"VerticalFields": [
+			{ "Fields": [1, 0, 0, 1] },
+			{ "Fields": [1, 1, 0, 1] },
+			{ "Fields": [1, 0, 1, 0] }
+		]
+	},
+	{
+		"Difficulty": 304,
+		"HorizontalFields": [
+			{ "Fields": [0, 1, 1] },
+			{ "Fields": [0, 1, 0] },
+			{ "Fields": [1, 1, 0] },
+			{ "Fields": [1, 1, 0] }
+		],
+		"VerticalFields": [
+			{ "Fields": [1, 1, 0, 1] },
+			{ "Fields": [1, 0, 1, 1] },
+			{ "Fields": [1, 0, 0, 1] }
+		]
+	},
+	{
+		"Difficulty": 305,
+		"HorizontalFields": [
+			{ "Fields": [1, 0, 1] },
+			{ "Fields": [0, 1, 0] },
+			{ "Fields": [1, 0, 1] },
+			{ "Fields": [1, 0, 1] }
+		],
+		"VerticalFields": [
+			{ "Fields": [1, 0, 1, 1] },
+			{ "Fields": [1, 1, 0, 1] },
+			{ "Fields": [1, 0, 1, 0] }
+		]
+	},
+	{
+		"Difficulty": 306,
+		"HorizontalFields": [
+			{ "Fields": [0, 1, 1] },
+			{ "Fields": [0, 0, 1] },
+			{ "Fields": [1, 0, 1] },
+			{ "Fields": [1, 0, 1] }
+		],
+		"VerticalFields": [
+			{ "Fields": [1, 1, 1, 0] },
+			{ "Fields": [1, 1, 0, 1] },
+			{ "Fields": [1, 0, 1, 0] }
+		]
+	},
+	{
+		"Difficulty": 307,
+		"HorizontalFields": [
+			{ "Fields": [1, 1, 1] },
+			{ "Fields": [1, 0, 1] },
+			{ "Fields": [1, 0, 0] },
+			{ "Fields": [0, 1, 0] }
+		],
+		"VerticalFields": [
+			{ "Fields": [0, 1, 0, 0] },
+			{ "Fields": [1, 0, 1, 1] },
+			{ "Fields": [1, 1, 1, 1] }
+		]
+	},
+	{
+		"Difficulty": 401,
+		"HorizontalFields": [
+			{ "Fields": [1, 1, 1, 1] },
+			{ "Fields": [1, 0, 0, 0] },
+			{ "Fields": [0, 1, 0, 1] },
+			{ "Fields": [1, 1, 1, 0] },
+			{ "Fields": [1, 1, 1, 0] }
+		],
+		"VerticalFields": [
+			{ "Fields": [0, 0, 1, 1, 1] },
+			{ "Fields": [1, 1, 1, 0, 0] },
+			{ "Fields": [1, 0, 0, 1, 1] },
+			{ "Fields": [1, 0, 0, 0, 1] }
+		]
+	},
+	{
+		"Difficulty": 402,
+		"HorizontalFields": [
+			{ "Fields": [1, 1, 1, 1] },
+			{ "Fields": [1, 0, 0, 0] },
+			{ "Fields": [0, 1, 0, 1] },
+			{ "Fields": [1, 1, 1, 0] },
+			{ "Fields": [1, 1, 1, 0] }
+		],
+		"VerticalFields": [
+			{ "Fields": [0, 0, 1, 1, 1] },
+			{ "Fields": [1, 1, 1, 0, 0] },
+			{ "Fields": [1, 0, 0, 1, 1] },
+			{ "Fields": [1, 0, 0, 1, 1] }
+		]
+	},
+	{
+		"Difficulty": 403,
+		"HorizontalFields": [
+			{ "Fields": [1, 1, 1, 1] },
+			{ "Fields": [1, 0, 0, 0] },
+			{ "Fields": [0, 1, 1, 0] },
+			{ "Fields": [0, 1, 1, 0] },
+			{ "Fields": [1, 1, 0, 1] }
+		],
+		"VerticalFields": [
+			{ "Fields": [0, 0, 0, 1, 1] },
+			{ "Fields": [1, 1, 1, 1, 1] },
+			{ "Fields": [1, 0, 0, 0, 1] },
+			{ "Fields": [1, 1, 0, 1, 0] }
+		]
+	},
+	{
+		"Difficulty": 404,
+		"HorizontalFields": [
+			{ "Fields": [1, 1, 1, 1] },
+			{ "Fields": [1, 1, 0, 0] },
+			{ "Fields": [0, 1, 0, 0] },
+			{ "Fields": [1, 0, 1, 0] },
+			{ "Fields": [0, 1, 1, 1] }
+		],
+		"VerticalFields": [
+			{ "Fields": [0, 0, 0, 1, 1] },
+			{ "Fields": [1, 0, 1, 1, 1] },
+			{ "Fields": [1, 0, 1, 1, 1] },
+			{ "Fields": [1, 1, 0, 0, 0] }
+		]
+	},
+	{
+		"Difficulty": 405,
+		"HorizontalFields": [
+			{ "Fields": [1, 1, 1, 1] },
+			{ "Fields": [1, 1, 0, 1] },
+			{ "Fields": [0, 0, 1, 1] },
+			{ "Fields": [0, 1, 1, 0] },
+			{ "Fields": [1, 1, 0, 1] }
+		],
+		"VerticalFields": [
+			{ "Fields": [0, 0, 0, 1, 0] },
+			{ "Fields": [1, 1, 1, 0, 1] },
+			{ "Fields": [1, 1, 0, 0, 1] },
+			{ "Fields": [1, 0, 0, 1, 0] }
+		]
+	},
+	{
+		"Difficulty": 406,
+		"HorizontalFields": [
+			{ "Fields": [1, 1, 1, 1] },
+			{ "Fields": [1, 0, 1, 0] },
+			{ "Fields": [0, 1, 0, 1] },
+			{ "Fields": [1, 0, 1, 0] },
+			{ "Fields": [0, 1, 0, 1] }
+		],
+		"VerticalFields": [
+			{ "Fields": [0, 0, 0, 0, 1] },
+			{ "Fields": [1, 1, 1, 1, 1] },
+			{ "Fields": [1, 0, 0, 0, 1] },
+			{ "Fields": [1, 1, 1, 1, 0] }
+		]
+	}
+	]
+}

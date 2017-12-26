@@ -6,6 +6,9 @@ public class LevelProvider : MonoBehaviour {
 	[SerializeField]
 	private FieldMapDataFactory fieldMapDataFactory;
 
+	[SerializeField]
+	private JsonFieldMapDataFactory jsonFieldMapDataFactory;
+
 	public FieldMapData GetMapData(int level) {
 		switch (level)
 		{
@@ -16,7 +19,7 @@ public class LevelProvider : MonoBehaviour {
 		case 2:
 			return fieldMapDataFactory.CreateTutorial3 ();
 		default:
-			return fieldMapDataFactory.CreateRandom ();
+			return jsonFieldMapDataFactory.Create (0);
 		}
 	}
 }
