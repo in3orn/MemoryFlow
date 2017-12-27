@@ -17,7 +17,7 @@ public class JsonFieldMapDataFactory : MonoBehaviour {
 
 		LevelsData data = JsonUtility.FromJson<LevelsData> (json);
 
-		int r = Mathf.RoundToInt (Random.value * data.Levels.Length);
+		int r = Mathf.RoundToInt (Random.value * (data.Levels.Length-1));
 		LevelData level = data.Levels [r];
 
 		int[,] horizontalFields = rowsToArray (level.HorizontalFields);
