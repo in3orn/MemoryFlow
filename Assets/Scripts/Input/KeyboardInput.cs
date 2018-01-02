@@ -1,12 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Keyboard : MonoBehaviour {
+public class KeyboardInput : MonoBehaviour {
 
 	[SerializeField]
 	private Game game;
 
-	void Update () {
+    void Awake()
+    {
+        init();
+    }
+
+    protected void init()
+    {
+        enabled = isSupported();
+    }
+
+    protected bool isSupported()
+    {
+        return Application.platform != RuntimePlatform.Android && Application.platform != RuntimePlatform.IPhonePlayer;
+    }
+
+    void Update () {
 		if (Input.GetKeyDown (KeyCode.UpArrow)) {
 			game.MoveUp ();
 			return;

@@ -5,15 +5,38 @@ using System.Collections;
 public class JsonFieldMapDataFactory : MonoBehaviour {
 
 	[SerializeField]
-	string fileName;
+	private string fileName;
+
+    private WWW www;
 
 	void Awake() {
 		Random.InitState ((int)Time.deltaTime);
-	}
+
+        StartCoroutine(loadFile());
+    }
+
+    private IEnumerator loadFile()
+    {
+        string filePath = getFilePath();
+        www = new WWW(filePath);
+
+        yield return www;
+    }
+
+    private string getFilePath()
+    {
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            return "jar:file://" + Application.dataPath + "!/assets/" + fileName; 
+        }
+        else
+        {
+            return "file://" + Path.Combine(Application.streamingAssetsPath, fileName);
+        }
+    }
 
 	public FieldMapData Create(int levelName) {
-		string filePath = Path.Combine (Application.streamingAssetsPath, fileName);
-		string json = File.ReadAllText (filePath);
+        string json = www.text;
 
 		LevelsData data = JsonUtility.FromJson<LevelsData> (json);
 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class InputController : MonoBehaviour {
+public abstract class SwipeInput : MonoBehaviour {
 
     [SerializeField]
     private Game game;
@@ -10,23 +10,35 @@ public class InputController : MonoBehaviour {
 
     private Vector2 start;
 
-    private bool mouseDown = false;
+    private bool down = false;
+    
+    void Awake() {
+        init();
+	}
+
+    protected virtual void init()
+    {
+        enabled = isSupported();
+    }
+
+    protected abstract bool isSupported();
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (isInputDown())
         {
             start = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            mouseDown = true;
+            down = true;
+            return;
         }
 
-        if(Input.GetMouseButtonUp(0))
+        if (down && isInputUp())
         {
-            mouseDown = false;
+            down = false;
 
             Vector2 end = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            
-            if(Mathf.Abs(end.x - start.x) < MinSwipeLength || Mathf.Abs(end.y - start.y) < MinSwipeLength)
+
+            if (Mathf.Abs(end.x - start.x) < MinSwipeLength || Mathf.Abs(end.y - start.y) < MinSwipeLength)
             {
                 if (end.x - start.x > MinSwipeLength)
                 {
@@ -51,4 +63,8 @@ public class InputController : MonoBehaviour {
             }
         }
     }
+
+    protected abstract bool isInputDown();
+
+    protected abstract bool isInputUp();
 }
