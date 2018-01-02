@@ -38,6 +38,16 @@ public class Game : MonoBehaviour
     [SerializeField]
     PopUpCanvas gameOverCanvas;
 
+    [SerializeField]
+    PopUpCanvas tutorialCanvas;
+
+    [SerializeField]
+    private float showTutorialDelay = 5;
+
+    private float startLevelTime;
+
+    private bool tutorialShown = false;
+
     public int GreenGems
     {
         get { return greenGems; }
@@ -55,9 +65,21 @@ public class Game : MonoBehaviour
 
     void Start()
     {
+        level.OnMoved += updateTutorial;
         level.OnFinished += startNextLevel;
 		level.OnFailed += endGame;
 		level.OnDied += updateLives;
+
+        gameOverCanvas.Show();
+    }
+
+    void Update()
+    {
+        if(!tutorialShown && Time.time - startLevelTime > showTutorialDelay)
+        {
+            tutorialCanvas.Show();
+            tutorialShown = true;
+        }
     }
 
 	public void StartNewRun()
@@ -99,6 +121,21 @@ public class Game : MonoBehaviour
 		lives = startLives;
 		level.Clear ();
         level.Init(currentLevel);
+
+        startLevelTime = Time.time;
+        tutorialShown = false;
+    }
+
+    private void updateTutorial()
+    {
+        if (tutorialShown)
+        {
+            tutorialCanvas.Hide();
+        }
+        else
+        {
+            tutorialShown = true;
+        }
     }
 
     public void MoveLeft()

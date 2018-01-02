@@ -16,6 +16,9 @@ public class Level : MonoBehaviour
 	public delegate void DiedAction();
 	public event DiedAction OnDied;
 
+    public delegate void MovedAction();
+    public event MovedAction OnMoved;
+
     private enum StateEnum
     {
         Idle = 0,
@@ -195,6 +198,8 @@ public class Level : MonoBehaviour
             queuedFields.Enqueue(field);
             queuedMoves.Enqueue(vector);
         }
+
+        OnMoved();
     }
 
     private void performMove(Field field, Vector2 vector)

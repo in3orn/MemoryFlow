@@ -17,11 +17,6 @@ public class PopUpCanvas : MonoBehaviour {
 		canvasGroup.blocksRaycasts = false;
 	}
 
-	void Start()
-	{
-		Show ();
-	}
-
     public void Show()
     {
 		canvasGroup.blocksRaycasts = true;
