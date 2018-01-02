@@ -27,25 +27,32 @@ public class Player : MonoBehaviour
 
     private CircleCollider2D circleCollider;
 
-	private Showable showable;
+    private Showable showable;
+
+    private float showInterval;
+
+    private float hideInterval;
 
     void Awake()
     {
         circleCollider = GetComponent<CircleCollider2D>();
-		showable = GetComponent<Showable> ();
+        showable = GetComponent<Showable>();
 
         moves = new Queue<Vector2>(2);
     }
 
-	public void Init(Vector2 position, float showInterval, float hideInterval)
+    public void Init(Vector2 position, float showInterval, float hideInterval)
     {
         state = StateEnum.Idle;
-        
+
         transform.position = position;
         transform.localScale = Vector3.one;
 
-		showable.ShowDelay = position.x / Field.SIZE + position.y / Field.SIZE * showInterval;
-		showable.HideDelay = position.x / Field.SIZE + position.y / Field.SIZE * hideInterval;
+        this.showInterval = showInterval;
+        this.hideInterval = hideInterval;
+
+        showable.ShowDelay = (position.x / Field.SIZE + position.y / Field.SIZE) * showInterval;
+        showable.HideDelay = (position.x / Field.SIZE + position.y / Field.SIZE) * hideInterval;
 
         circleCollider.enabled = true;
     }
@@ -59,7 +66,11 @@ public class Player : MonoBehaviour
     {
         if (state != StateEnum.Moving)
         {
-            StartCoroutine(move(transform.position, (Vector2) transform.position + vector));
+            Vector2 target = (Vector2)transform.position + vector;
+            StartCoroutine(move(transform.position, target));
+
+            showable.ShowDelay = (target.x / Field.SIZE + target.y / Field.SIZE) * showInterval;
+            showable.HideDelay = (target.x / Field.SIZE + target.y / Field.SIZE) * hideInterval;
         }
     }
 
@@ -68,7 +79,7 @@ public class Player : MonoBehaviour
         state = StateEnum.Moving;
 
         float t = 0f;
-        while(true)
+        while (true)
         {
             t += Time.deltaTime / moveDuration;
             transform.position = Vector2.Lerp(start, end, t);
@@ -81,13 +92,13 @@ public class Player : MonoBehaviour
         OnMoved();
     }
 
-	public void Show()
-	{
-		showable.Show ();
-	}
+    public void Show()
+    {
+        showable.Show();
+    }
 
-	public void Hide()
-	{
-		showable.Hide ();
-	}
+    public void Hide()
+    {
+        showable.Hide();
+    }
 }

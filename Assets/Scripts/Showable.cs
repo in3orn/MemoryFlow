@@ -23,9 +23,15 @@ public class Showable : MonoBehaviour
 
     public bool Hidden { get { return hidden; } }
 
-    public float ShowDelay { get; set; }
+    public float ShowDelay {
+        get { return showDelay; }
+        set { showDelay = value; }
+    }
 
-    public float HideDelay { get; set; }
+    public float HideDelay {
+        get { return hideDelay; }
+        set { hideDelay = value; }
+    }
 
     void Awake()
     {
@@ -35,24 +41,12 @@ public class Showable : MonoBehaviour
     public void Show()
     {
         hidden = false;
-
-		foreach (Showable child in GetComponentsInChildren<Showable>())
-		{
-			if (child != this) child.Show();
-		}
-
         StartCoroutine(setOpacity(spriteRenderer.color.a, 1f, showDelay, showDuration));
     }
 
     public void Hide()
     {
         hidden = true;
-
-		foreach (Showable child in GetComponentsInChildren<Showable>())
-		{
-			if (child != this) child.Hide();
-		}
-
         StartCoroutine(setOpacity(spriteRenderer.color.a, 0f, hideDelay, hideDuration));
     }
 

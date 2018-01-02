@@ -26,13 +26,13 @@ public class Finishable : MonoBehaviour
 
 	public void Init(Vector2 position, float showInterval, float hideInterval)
 	{
-		this.transform.position = position;
-		this.transform.localScale = Vector3.one;
+		transform.position = position;
+		transform.localScale = Vector3.one;
 		circleCollider.enabled = true;
 
-		showable.ShowDelay = position.x / Field.SIZE + position.y / Field.SIZE * showInterval;
-		showable.HideDelay = position.x / Field.SIZE + position.y / Field.SIZE * hideInterval;
-	}
+		showable.ShowDelay = (position.x / Field.SIZE + position.y / Field.SIZE) * showInterval;
+		showable.HideDelay = (position.x / Field.SIZE + position.y / Field.SIZE) * hideInterval;
+    }
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
@@ -41,25 +41,8 @@ public class Finishable : MonoBehaviour
 
 	public void Finish()
 	{
-		StartCoroutine(finish());
-	}
-
-	private IEnumerator finish()
-	{
-		Vector3 start = transform.localScale;
-
-		float t = 0f;
-		while (true)
-		{
-			t += Time.deltaTime / finishDuration;
-				transform.localScale = Vector3.Lerp(start, maxFinishScale, Mathf.Sin(t*Mathf.PI));
-
-			if (t >= 1) break;
-			yield return null;
-		}
-
-		OnFinished();
-	}
+        OnFinished();
+    }
 
 	public void Show()
 	{

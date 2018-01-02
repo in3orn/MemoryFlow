@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class Level : MonoBehaviour
 {
-	public delegate void StartedAction();
-	public event StartedAction OnStarted;
+    public delegate void StartedAction();
+    public event StartedAction OnStarted;
 
     public delegate void FinishedAction();
     public event FinishedAction OnFinished;
@@ -13,8 +13,8 @@ public class Level : MonoBehaviour
     public delegate void FailedAction();
     public event FailedAction OnFailed;
 
-	public delegate void DiedAction();
-	public event DiedAction OnDied;
+    public delegate void DiedAction();
+    public event DiedAction OnDied;
 
     public delegate void MovedAction();
     public event MovedAction OnMoved;
@@ -31,16 +31,16 @@ public class Level : MonoBehaviour
     private StateEnum state;
 
     [SerializeField]
-	private LevelProvider levelProvider;
+    private LevelProvider levelProvider;
 
-	[SerializeField]
-	private FieldMap fieldMap;
+    [SerializeField]
+    private FieldMap fieldMap;
 
     [SerializeField]
     private Player player;
 
     [SerializeField]
-	private Finishable finish;
+    private Finishable finish;
 
     [SerializeField]
     private GameObject center;
@@ -55,13 +55,15 @@ public class Level : MonoBehaviour
     private Queue<Field> queuedFields;
 
 
-    public int HorizontalLength {
-		get { return fieldMap.HorizontalLength; }
-	}
+    public int HorizontalLength
+    {
+        get { return fieldMap.HorizontalLength; }
+    }
 
-	public int VerticalLength {
-		get { return fieldMap.VerticalLength; }
-	}
+    public int VerticalLength
+    {
+        get { return fieldMap.VerticalLength; }
+    }
 
     void Awake()
     {
@@ -73,44 +75,48 @@ public class Level : MonoBehaviour
     {
         player.OnMoved += afterMove;
 
-		fieldMap.OnShown += startGame;
-		fieldMap.OnHidden += FinishGame;
+        fieldMap.OnShown += startGame;
+        fieldMap.OnHidden += FinishGame;
 
-		finish.OnFinished += FinishLevel;
+        finish.OnFinished += FinishLevel;
     }
 
     public void Init(int level)
     {
-		fieldMap.Init (levelProvider.GetMapData(level));
+        fieldMap.Init(levelProvider.GetMapData(level));
 
-		int sx = fieldMap.HorizontalLength - 1;
-		int sy = fieldMap.VerticalLength - 1;
+        int sx = fieldMap.HorizontalLength - 1;
+        int sy = fieldMap.VerticalLength - 1;
 
-		finish.Init(new Vector2 (sx, sy) * Field.SIZE, fieldMap.ShowInterval, fieldMap.HideInterval);
-		player.Init (Vector2.zero, fieldMap.ShowInterval, fieldMap.HideInterval);
+        finish.Init(new Vector2(sx, sy) * Field.SIZE, fieldMap.ShowInterval, fieldMap.HideInterval);
+        player.Init(Vector2.zero, fieldMap.ShowInterval, fieldMap.HideInterval);
         playerActualPosition = player.transform.position;
+
+        queuedFields.Clear();
+        queuedMoves.Clear();
 
         initCenter();
 
         state = StateEnum.Idle;
-		fieldMap.ShowPreview ();
-		showActors ();
+        fieldMap.ShowPreview();
+        showActors();
 
-		OnStarted ();
+        OnStarted();
     }
 
-	public void Clear() {
-		fieldMap.Clear ();
-	}
+    public void Clear()
+    {
+        fieldMap.Clear();
+    }
 
     private void initCenter()
     {
-		center.transform.position = new Vector2((fieldMap.HorizontalLength - 1) * Field.SIZE, (fieldMap.VerticalLength - 1) * Field.SIZE) * 0.5f;
+        center.transform.position = new Vector2((fieldMap.HorizontalLength - 1) * Field.SIZE, (fieldMap.VerticalLength - 1) * Field.SIZE) * 0.5f;
     }
 
     public bool CanMoveLeft()
     {
-		return CanMove() && canMoveLeft(player);
+        return CanMove() && canMoveLeft(player);
     }
 
     public bool CanMoveRight()
@@ -133,25 +139,29 @@ public class Level : MonoBehaviour
         return state == StateEnum.Showing || state == StateEnum.Playing;
     }
 
-    private bool canMoveLeft(Player player) {
-		Vector2 position = getFieldPosition (playerActualPosition) + Vector2.left;
-		return fieldMap.CanMoveLeft ((int) position.x, (int) position.y);
-	}
+    private bool canMoveLeft(Player player)
+    {
+        Vector2 position = getFieldPosition(playerActualPosition) + Vector2.left;
+        return fieldMap.CanMoveLeft((int)position.x, (int)position.y);
+    }
 
-    private bool canMoveRight(Player player) {
-		Vector2 position = getFieldPosition (playerActualPosition);
-		return fieldMap.CanMoveRight ((int) position.x, (int) position.y);
-	}
+    private bool canMoveRight(Player player)
+    {
+        Vector2 position = getFieldPosition(playerActualPosition);
+        return fieldMap.CanMoveRight((int)position.x, (int)position.y);
+    }
 
-    private bool canMoveUp(Player player) {
-		Vector2 position = getFieldPosition (playerActualPosition);
-		return fieldMap.CanMoveUp ((int) position.x, (int) position.y);
-	}
+    private bool canMoveUp(Player player)
+    {
+        Vector2 position = getFieldPosition(playerActualPosition);
+        return fieldMap.CanMoveUp((int)position.x, (int)position.y);
+    }
 
-    private bool canMoveDown(Player player) {
-		Vector2 position = getFieldPosition (playerActualPosition) + Vector2.down;
-		return fieldMap.CanMoveDown ((int) position.x, (int) position.y);
-	}
+    private bool canMoveDown(Player player)
+    {
+        Vector2 position = getFieldPosition(playerActualPosition) + Vector2.down;
+        return fieldMap.CanMoveDown((int)position.x, (int)position.y);
+    }
 
     public void MoveLeft()
     {
@@ -204,47 +214,50 @@ public class Level : MonoBehaviour
 
     private void performMove(Field field, Vector2 vector)
     {
-        if (performAction(field))
+        if ((state == StateEnum.Showing || state == StateEnum.Playing))
         {
-            player.Move(vector * Field.SIZE);
-        }
-        else
-        {
-            playerActualPosition = player.transform.position;
-            queuedFields.Clear();
-            queuedMoves.Clear();
+            if (performAction(field))
+            {
+                player.Move(vector * Field.SIZE);
+            }
+            else
+            {
+                playerActualPosition = player.transform.position;
+                queuedFields.Clear();
+                queuedMoves.Clear();
+            }
         }
     }
 
     private void afterMove()
     {
-        if(queuedMoves.Count > 0)
+        if (queuedMoves.Count > 0)
         {
             performMove(queuedFields.Dequeue(), queuedMoves.Dequeue());
         }
     }
 
-	private Field getLeftField(Player player)
-	{
-		Vector2 position = getFieldPosition(playerActualPosition) + Vector2.left;
-		return fieldMap.GetHorizontalField((int)position.x, (int)position.y);
-	}
-
-	private Field getRightField(Player player)
-	{
-		Vector2 position = getFieldPosition(playerActualPosition);
+    private Field getLeftField(Player player)
+    {
+        Vector2 position = getFieldPosition(playerActualPosition) + Vector2.left;
         return fieldMap.GetHorizontalField((int)position.x, (int)position.y);
     }
 
-	public Field getUpField(Player player)
-	{
-		Vector2 position = getFieldPosition(playerActualPosition);
+    private Field getRightField(Player player)
+    {
+        Vector2 position = getFieldPosition(playerActualPosition);
+        return fieldMap.GetHorizontalField((int)position.x, (int)position.y);
+    }
+
+    public Field getUpField(Player player)
+    {
+        Vector2 position = getFieldPosition(playerActualPosition);
         return fieldMap.GetVerticalField((int)position.x, (int)position.y);
     }
 
-	private Field getDownField(Player player)
-	{
-		Vector2 position = getFieldPosition(playerActualPosition) + Vector2.down;
+    private Field getDownField(Player player)
+    {
+        Vector2 position = getFieldPosition(playerActualPosition) + Vector2.down;
         return fieldMap.GetVerticalField((int)position.x, (int)position.y);
     }
 
@@ -253,57 +266,64 @@ public class Level : MonoBehaviour
         return position / Field.SIZE;
     }
 
-	private bool performAction(Field field)
+    private bool performAction(Field field)
     {
-		if (state == StateEnum.Showing)
-		{
-			state = StateEnum.Playing;
-			fieldMap.ShowPlayMode();
-		}
-		if (!field.Valid) {
-			field.Break ();
-			RestartLevel ();
+        if (state == StateEnum.Showing)
+        {
+            state = StateEnum.Playing;
+            fieldMap.ShowPlayMode();
+        }
 
-			return false;
-		} else {
-			field.Unmask ();
-		}
+        if (!field.Valid)
+        {
+            field.Break();
+            RestartLevel();
 
-		return true;
+            return false;
+        }
+        else
+        {
+            field.Unmask();
+        }
+
+        return true;
     }
 
-	private void startGame() {
-		if (state == StateEnum.Idle || state == StateEnum.Failed) {
-			state = StateEnum.Showing;
-		}
-	}
+    private void startGame()
+    {
+        if (state == StateEnum.Idle || state == StateEnum.Failed)
+        {
+            state = StateEnum.Showing;
+        }
+    }
 
     public void FinishLevel()
     {
         state = StateEnum.Finished;
-		fieldMap.Hide();
-		hideActors ();
+        fieldMap.Hide();
+        hideActors();
     }
 
-	public void RestartLevel()
-	{
-		OnDied ();
-	}
+    public void RestartLevel()
+    {
+        OnDied();
+    }
 
     public void FailLevel()
     {
         state = StateEnum.Failed;
-		fieldMap.Hide();
-		hideActors ();
+        fieldMap.Hide();
+        hideActors();
     }
 
-	public void FinishGame() {
-		StartCoroutine (finishGame ());
-	}
-
-	private IEnumerator finishGame()
+    public void FinishGame()
     {
-		yield return new WaitForSeconds (finishDuration);
+        StartCoroutine(finishGame());
+    }
+
+    private IEnumerator finishGame()
+    {
+        yield return new WaitForSeconds(finishDuration);
         switch (state)
         {
             case StateEnum.Finished:
@@ -315,15 +335,15 @@ public class Level : MonoBehaviour
         }
     }
 
-	private void showActors() 
-	{
-		player.Show ();
-		finish.Show ();
-	}
+    private void showActors()
+    {
+        player.Show();
+        finish.Show();
+    }
 
-	private void hideActors()
-	{
-		player.Hide ();
-		finish.Hide ();
-	}
+    private void hideActors()
+    {
+        player.Hide();
+        finish.Hide();
+    }
 }
