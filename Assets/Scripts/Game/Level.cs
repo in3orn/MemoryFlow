@@ -36,9 +36,6 @@ public class Level : MonoBehaviour
     [SerializeField]
     private Player player;
 
-	[SerializeField]
-	private Showable start;
-
     [SerializeField]
 	private Finishable finish;
 
@@ -48,7 +45,14 @@ public class Level : MonoBehaviour
     [SerializeField]
     private float finishDuration = 1f;
 
-	public int HorizontalLength {
+    private Vector2 playerActualPosition;
+
+    private Queue<Vector2> queuedMoves;
+
+    private Queue<Field> queuedFields;
+
+
+    public int HorizontalLength {
 		get { return fieldMap.HorizontalLength; }
 	}
 
@@ -56,8 +60,16 @@ public class Level : MonoBehaviour
 		get { return fieldMap.VerticalLength; }
 	}
 
+    void Awake()
+    {
+        queuedMoves = new Queue<Vector2>(5);
+        queuedFields = new Queue<Field>(5);
+    }
+
     void Start()
     {
+        player.OnMoved += afterMove;
+
 		fieldMap.OnShown += startGame;
 		fieldMap.OnHidden += FinishGame;
 
@@ -73,6 +85,7 @@ public class Level : MonoBehaviour
 
 		finish.Init(new Vector2 (sx, sy) * Field.SIZE, fieldMap.ShowInterval, fieldMap.HideInterval);
 		player.Init (Vector2.zero, fieldMap.ShowInterval, fieldMap.HideInterval);
+        playerActualPosition = player.transform.position;
 
         initCenter();
 
@@ -94,54 +107,54 @@ public class Level : MonoBehaviour
 
     public bool CanMoveLeft()
     {
-		return CanMove() && CanMoveLeft(player);
+		return CanMove() && canMoveLeft(player);
     }
 
     public bool CanMoveRight()
     {
-        return CanMove() && CanMoveRight(player);
+        return CanMove() && canMoveRight(player);
     }
 
     public bool CanMoveUp()
     {
-        return CanMove() && CanMoveUp(player);
+        return CanMove() && canMoveUp(player);
     }
 
     public bool CanMoveDown()
     {
-        return CanMove() && CanMoveDown(player);
+        return CanMove() && canMoveDown(player);
     }
-
-	public bool CanMoveLeft(Player player) {
-		Vector2 position = getFieldPosition (player) + Vector2.left;
-		return fieldMap.CanMoveLeft ((int) position.x, (int) position.y);
-	}
-
-	public bool CanMoveRight(Player player) {
-		Vector2 position = getFieldPosition (player);
-		return fieldMap.CanMoveRight ((int) position.x, (int) position.y);
-	}
-
-	public bool CanMoveUp(Player player) {
-		Vector2 position = getFieldPosition (player);
-		return fieldMap.CanMoveUp ((int) position.x, (int) position.y);
-	}
-
-	public bool CanMoveDown(Player player) {
-		Vector2 position = getFieldPosition (player) + Vector2.down;
-		return fieldMap.CanMoveDown ((int) position.x, (int) position.y);
-	}
 
     public bool CanMove()
     {
-        return (state == StateEnum.Showing || state == StateEnum.Playing) && player.CanMove();
+        return state == StateEnum.Showing || state == StateEnum.Playing;
     }
+
+    private bool canMoveLeft(Player player) {
+		Vector2 position = getFieldPosition (playerActualPosition) + Vector2.left;
+		return fieldMap.CanMoveLeft ((int) position.x, (int) position.y);
+	}
+
+    private bool canMoveRight(Player player) {
+		Vector2 position = getFieldPosition (playerActualPosition);
+		return fieldMap.CanMoveRight ((int) position.x, (int) position.y);
+	}
+
+    private bool canMoveUp(Player player) {
+		Vector2 position = getFieldPosition (playerActualPosition);
+		return fieldMap.CanMoveUp ((int) position.x, (int) position.y);
+	}
+
+    private bool canMoveDown(Player player) {
+		Vector2 position = getFieldPosition (playerActualPosition) + Vector2.down;
+		return fieldMap.CanMoveDown ((int) position.x, (int) position.y);
+	}
 
     public void MoveLeft()
     {
         if (CanMoveLeft())
         {
-			if(performAction (getLeftField (player))) player.MoveLeft();
+            move(getLeftField(player), Vector2.left);
         }
     }
 
@@ -149,7 +162,7 @@ public class Level : MonoBehaviour
     {
         if (CanMoveRight())
         {
-			if(performAction (getRightField (player))) player.MoveRight();
+            move(getRightField(player), Vector2.right);
         }
     }
 
@@ -157,7 +170,7 @@ public class Level : MonoBehaviour
     {
         if (CanMoveUp())
         {
-			if(performAction (getUpField (player))) player.MoveUp();
+            move(getUpField(player), Vector2.up);
         }
     }
 
@@ -165,48 +178,74 @@ public class Level : MonoBehaviour
     {
         if (CanMoveDown())
         {
-			if(performAction (getDownField (player))) player.MoveDown();
+            move(getDownField(player), Vector2.down);
+        }
+    }
+
+    private void move(Field field, Vector2 vector)
+    {
+        playerActualPosition += vector * Field.SIZE;
+
+        if (queuedFields.Count == 0 && player.CanMove())
+        {
+            performMove(field, vector);
+        }
+        else
+        {
+            queuedFields.Enqueue(field);
+            queuedMoves.Enqueue(vector);
+        }
+    }
+
+    private void performMove(Field field, Vector2 vector)
+    {
+        if (performAction(field))
+        {
+            player.Move(vector * Field.SIZE);
+        }
+        else
+        {
+            playerActualPosition = player.transform.position;
+            queuedFields.Clear();
+            queuedMoves.Clear();
+        }
+    }
+
+    private void afterMove()
+    {
+        if(queuedMoves.Count > 0)
+        {
+            performMove(queuedFields.Dequeue(), queuedMoves.Dequeue());
         }
     }
 
 	private Field getLeftField(Player player)
 	{
-		Vector2 pos = getFieldPosition(player) + Vector2.left;
-		int x = (int)pos.x;
-		int y = (int)pos.y;
-		return fieldMap.GetHorizontalField(x, y);
+		Vector2 position = getFieldPosition(playerActualPosition) + Vector2.left;
+		return fieldMap.GetHorizontalField((int)position.x, (int)position.y);
 	}
 
 	private Field getRightField(Player player)
 	{
-		Vector2 pos = getFieldPosition(player);
-		int x = (int)pos.x;
-		int y = (int)pos.y;
-		return fieldMap.GetHorizontalField(x, y);
-	}
+		Vector2 position = getFieldPosition(playerActualPosition);
+        return fieldMap.GetHorizontalField((int)position.x, (int)position.y);
+    }
 
 	public Field getUpField(Player player)
 	{
-		Vector2 pos = getFieldPosition(player);
-		int x = (int)pos.x;
-		int y = (int)pos.y;
-		return fieldMap.GetVerticalField(x, y);
-	}
+		Vector2 position = getFieldPosition(playerActualPosition);
+        return fieldMap.GetVerticalField((int)position.x, (int)position.y);
+    }
 
 	private Field getDownField(Player player)
 	{
-		Vector2 pos = getFieldPosition(player) + Vector2.down;
-		int x = (int)pos.x;
-		int y = (int)pos.y;
-		return fieldMap.GetVerticalField(x, y);
-	}
+		Vector2 position = getFieldPosition(playerActualPosition) + Vector2.down;
+        return fieldMap.GetVerticalField((int)position.x, (int)position.y);
+    }
 
-    private Vector2 getFieldPosition(Player player)
+    private Vector2 getFieldPosition(Vector2 position)
     {
-        int x = Mathf.RoundToInt(player.transform.position.x / Field.SIZE);
-        int y = Mathf.RoundToInt(player.transform.position.y / Field.SIZE);
-
-        return new Vector2(x, y);
+        return position / Field.SIZE;
     }
 
 	private bool performAction(Field field)
@@ -274,14 +313,12 @@ public class Level : MonoBehaviour
 	private void showActors() 
 	{
 		player.Show ();
-		start.Show ();
 		finish.Show ();
 	}
 
 	private void hideActors()
 	{
 		player.Hide ();
-		start.Hide ();
 		finish.Hide ();
 	}
 }

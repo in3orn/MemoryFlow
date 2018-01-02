@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(CircleCollider2D))]
 [RequireComponent(typeof(Showable))]
@@ -14,19 +15,13 @@ public class Player : MonoBehaviour
     enum StateEnum
     {
         Idle = 0,
-        Moving,
-        Falling,
-        Died
+        Moving
     }
 
     [SerializeField]
     private float moveDuration = 0.5f;
 
-    [SerializeField]
-    private float fallDuration = 0.5f;
-
-    [SerializeField]
-    private float teleportDuration = 0.5f;
+    private Queue<Vector2> moves;
 
     private StateEnum state;
 
@@ -38,12 +33,14 @@ public class Player : MonoBehaviour
     {
         circleCollider = GetComponent<CircleCollider2D>();
 		showable = GetComponent<Showable> ();
+
+        moves = new Queue<Vector2>(2);
     }
 
 	public void Init(Vector2 position, float showInterval, float hideInterval)
     {
         state = StateEnum.Idle;
-
+        
         transform.position = position;
         transform.localScale = Vector3.one;
 
@@ -55,48 +52,18 @@ public class Player : MonoBehaviour
 
     public bool CanMove()
     {
-        return state == StateEnum.Idle;
+        return state != StateEnum.Moving;
     }
 
-    public void MoveLeft()
+    public void Move(Vector2 vector)
     {
-        move(transform.position + Vector3.left * Field.SIZE);
-    }
-
-    public void MoveRight()
-    {
-        move(transform.position + Vector3.right * Field.SIZE);
-    }
-
-    public void MoveUp()
-    {
-        move(transform.position + Vector3.up * Field.SIZE);
-    }
-
-    public void MoveDown()
-    {
-        move(transform.position + Vector3.down * Field.SIZE);
-    }
-
-    private IEnumerator scaleTo(Vector3 from, Vector3 to)
-    {
-        float t = 0f;
-        while (true)
+        if (state != StateEnum.Moving)
         {
-            t += Time.deltaTime / teleportDuration;
-            transform.localScale = Vector3.Lerp(from, to, t);
-
-            if (t >= 1) break;
-            yield return null;
+            StartCoroutine(move(transform.position, (Vector2) transform.position + vector));
         }
     }
 
-    private void move(Vector2 target)
-    {
-        StartCoroutine(move(transform.position, target));
-    }
-
-    private IEnumerator move(Vector3 start, Vector3 end)
+    private IEnumerator move(Vector2 start, Vector2 end)
     {
         state = StateEnum.Moving;
 
@@ -104,36 +71,14 @@ public class Player : MonoBehaviour
         while(true)
         {
             t += Time.deltaTime / moveDuration;
-            transform.position = Vector3.Lerp(start, end, t);
+            transform.position = Vector2.Lerp(start, end, t);
 
             if (t >= 1) break;
             yield return null;
         }
 
         state = StateEnum.Idle;
-    }
-
-    public void Fall()
-    {
-        StartCoroutine(fall(transform.localScale));
-    }
-
-    private IEnumerator fall(Vector3 start)
-    {
-        state = StateEnum.Falling;
-
-        float t = 0f;
-        while (true)
-        {
-            t += Time.deltaTime / fallDuration;
-            transform.localScale = Vector3.Lerp(start, Vector3.zero, t);
-
-            if (t >= 1) break;
-            yield return null;
-        }
-
-        state = StateEnum.Died;
-        OnDied();
+        OnMoved();
     }
 
 	public void Show()
