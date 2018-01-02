@@ -5,7 +5,7 @@ using System.Collections;
 [RequireComponent(typeof(Showable))]
 public class Field : MonoBehaviour
 {
-    public static readonly float SIZE = 1.2f;
+    public static readonly float SIZE = 1.28f;
 
 	public enum TypeEnum
 	{
