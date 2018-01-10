@@ -6,7 +6,10 @@ public abstract class SwipeInput : MonoBehaviour {
     private Game game;
 
     [SerializeField]
-    private float MinSwipeLength = 50.0f;
+    private float MinSwipeLength = 10.0f;
+
+    [SerializeField]
+    private float MinSwipeDiff = 5.0f;
 
     private Vector2 start;
 
@@ -37,25 +40,31 @@ public abstract class SwipeInput : MonoBehaviour {
             down = false;
 
             Vector2 end = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            Vector2 swipe = end - start;
 
-            if (Mathf.Abs(end.x - start.x) < MinSwipeLength || Mathf.Abs(end.y - start.y) < MinSwipeLength)
+            float ax = Mathf.Abs(swipe.x);
+            float ay = Mathf.Abs(swipe.y);
+            if (ax > MinSwipeLength && ax - ay > MinSwipeDiff)
             {
-                if (end.x - start.x > MinSwipeLength)
+                if (swipe.x > 0.0F)
                 {
                     game.MoveRight();
                     return;
                 }
-                if (end.x - start.x < -MinSwipeLength)
+                if (swipe.x < 0.0F)
                 {
                     game.MoveLeft();
                     return;
                 }
-                if (end.y - start.y > MinSwipeLength)
+            }
+            if (ay > MinSwipeLength && ay - ax > MinSwipeDiff)
+            {
+                if (swipe.y > 0.0F)
                 {
                     game.MoveUp();
                     return;
                 }
-                if (end.y - start.y < -MinSwipeLength)
+                if (swipe.y < 0.0F)
                 {
                     game.MoveDown();
                     return;
