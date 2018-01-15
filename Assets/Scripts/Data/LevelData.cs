@@ -3,8 +3,9 @@
 [Serializable]
 public class LevelData
 {
-	public int Difficulty;
+    public int Width;
+    public int Height;
+    public string Name;
 
-	public RowData[] HorizontalFields;
-	public RowData[] VerticalFields;
+	public VariantData[] Variants;
 }

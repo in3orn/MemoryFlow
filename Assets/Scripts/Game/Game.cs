@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Dev.Krk.MemoryFlow.Game.State;
+using Dev.Krk.MemoryFlow.Data.Controller;
 
 public class Game : MonoBehaviour
 {
@@ -48,6 +50,15 @@ public class Game : MonoBehaviour
 
     private bool tutorialShown = false;
 
+    [SerializeField]
+    private ProgressController progressController;
+
+    [SerializeField]
+    private LevelsDataController levelsController;
+
+    [SerializeField]
+    private FlowsDataController flowsController;
+
     public int GreenGems
     {
         get { return greenGems; }
@@ -65,12 +76,38 @@ public class Game : MonoBehaviour
 
     void Start()
     {
-        level.OnMoved += updateTutorial;
-        level.OnFinished += startNextLevel;
-		level.OnFailed += endGame;
-		level.OnDied += updateLives;
+    }
 
-        gameOverCanvas.Show();
+    void OnEnable()
+    {
+        level.OnMoved += updateTutorial;
+        level.OnFinished += ProcessLevelCompleted;
+        level.OnFailed += ProcessLevelFailed;
+        level.OnDied += updateLives;
+
+        levelsController.OnInitialized += ProcessOnInitialized;
+        flowsController.OnInitialized += ProcessOnInitialized;
+    }
+
+    void OnDisable()
+    {
+        if(level != null)
+        {
+            level.OnMoved -= updateTutorial;
+            level.OnFinished -= ProcessLevelCompleted;
+            level.OnFailed -= ProcessLevelFailed;
+            level.OnDied -= updateLives;
+        }
+
+        if(levelsController != null)
+        {
+            levelsController.OnInitialized -= ProcessOnInitialized;
+        }
+
+        if (flowsController != null)
+        {
+            flowsController.OnInitialized -= ProcessOnInitialized;
+        }
     }
 
     void Update()
@@ -82,6 +119,22 @@ public class Game : MonoBehaviour
         }
     }
 
+    private void ProcessOnInitialized()
+    {
+        //TODO should listen for progress & fieldmap factory?
+        if (!levelsController.Initialized) return;
+        if (!flowsController.Initialized) return;
+
+        if (progressController.Flow == 0)
+        {
+            StartNewRun();
+        }
+        else
+        {
+            gameOverCanvas.Show();
+        }
+    }
+
 	public void StartNewRun()
 	{
 		currentLevel = 0;
@@ -90,19 +143,38 @@ public class Game : MonoBehaviour
 		gameOverCanvas.Hide ();
 	}
 
-    private void startNextLevel()
+    private void ProcessLevelCompleted()
     {
         greenGems++;
-        currentLevel++;
-        currentDifficulty++;
-        startLevel();
-        
-        OnFinished();
+        progressController.NextLevel();
+
+        if (progressController.IsFlowCompleted())
+        {
+            progressController.NextFlow();
+
+            if (progressController.IsGameCompleted())
+            {
+                progressController.ResetFlow(greenGems);
+
+                //OnFlowCompleted();
+                gameOverCanvas.Show();
+            }
+            else
+            {
+                //OnLevelCompleted();
+                gameOverCanvas.Show();
+            }
+        }
+        else
+        {
+            startLevel();
+            OnFinished();
+        }
     }
 
-    public void endGame()
+    public void ProcessLevelFailed()
     {
-        //TODO wait 18h for next live
+        progressController.ResetFlow(greenGems);
         gameOverCanvas.Show();
     }
 
@@ -120,7 +192,9 @@ public class Game : MonoBehaviour
     {
 		lives = startLives;
 		level.Clear ();
-        level.Init(currentLevel);
+
+        FlowData flowData = flowsController.Data.Flows[progressController.Flow];
+        level.Init(flowData.Levels[progressController.Level]);
 
         startLevelTime = Time.time;
         tutorialShown = false;

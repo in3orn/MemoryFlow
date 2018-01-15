@@ -19,10 +19,10 @@ public class Zoomer : MonoBehaviour {
 	[SerializeField]
 	private Level level;
 
-	private Camera camera;
+	private Camera myCamera;
 
 	void Awake () {
-		camera = GetComponent<Camera> ();
+        myCamera = GetComponent<Camera> ();
 	}
 
 	void Start() {
@@ -35,7 +35,7 @@ public class Zoomer : MonoBehaviour {
 	}
 
 	public void SetZoom (float zoom) {
-		StartCoroutine(setZoom(camera.orthographicSize, zoom, zoomDelay, zoomDuration));
+		StartCoroutine(setZoom(myCamera.orthographicSize, zoom, zoomDelay, zoomDuration));
 	}
 
 	private IEnumerator setZoom(float from, float to, float delay, float duration) {
@@ -48,7 +48,7 @@ public class Zoomer : MonoBehaviour {
 		while (true)
 		{
 			t += Time.deltaTime / duration;
-			camera.orthographicSize = Mathf.Lerp(from, to, t);
+            myCamera.orthographicSize = Mathf.Lerp(from, to, t);
 
 			if (t >= 1) break;
 			yield return null;
