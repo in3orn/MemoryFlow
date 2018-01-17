@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Dev.Krk.MemoryFlow.Game;
 
 public class FieldsFactory : MonoBehaviour
 {
@@ -6,7 +7,7 @@ public class FieldsFactory : MonoBehaviour
     private GameObject pattern;
 
     [SerializeField]
-    private Level level;
+    private LevelController level;
 
     public Field[,] Create(int[,] fieldTypes, Field.TypeEnum fieldType)
     {

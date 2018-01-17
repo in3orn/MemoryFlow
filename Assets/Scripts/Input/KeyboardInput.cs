@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using Dev.Krk.MemoryFlow.Game;
+
 public class KeyboardInput : MonoBehaviour {
 
 	[SerializeField]
-	private Game game;
+	private GameController game;
 
     void Awake()
     {

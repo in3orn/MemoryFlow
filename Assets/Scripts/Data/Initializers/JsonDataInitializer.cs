@@ -1,26 +1,20 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using System.IO;
-using UnityEngine;
-using UnityEngine.Events;
+using Dev.Krk.MemoryFlow.Resources;
 
-namespace Dev.Krk.MemoryFlow.Data.Controller
+namespace Dev.Krk.MemoryFlow.Data.Initializers
 {
-    public class JsonDataController<DataType> : MonoBehaviour
+    public class JsonDataInitializer<DataType> : ResourcesInitializer
     {
-        public UnityAction OnInitialized;
-
         [SerializeField]
         private string fileName = "*.json";
 
         private DataType data;
 
-        private bool initialized;
-
         public DataType Data { get { return data; } }
 
-        public bool Initialized { get { return initialized; } }
-
-        void Start()
+        public override void Init()
         {
             StartCoroutine(InitData());
         }

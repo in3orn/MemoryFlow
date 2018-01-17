@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using Dev.Krk.MemoryFlow.Game;
+
 [RequireComponent(typeof(Camera))]
 public class Zoomer : MonoBehaviour {
 
@@ -17,7 +19,7 @@ public class Zoomer : MonoBehaviour {
 	private float zoomFactor = 0.5f;
 
 	[SerializeField]
-	private Level level;
+	private LevelController level;
 
 	private Camera myCamera;
 

@@ -29,6 +29,18 @@ public class PopUpCanvas : MonoBehaviour {
         StartCoroutine(setOpacity(canvasGroup.alpha, 0f, hideDuration));
     }
 
+    public void ShowImmediately()
+    {
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.alpha = 1f;
+    }
+
+    public void HideImmediately()
+    {
+        canvasGroup.blocksRaycasts = false;
+        canvasGroup.alpha = 0f;
+    }
+
     private IEnumerator setOpacity(float from, float to, float duration)
     {
         float t = 0f;

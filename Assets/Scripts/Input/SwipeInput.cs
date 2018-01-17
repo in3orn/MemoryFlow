@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 
+using Dev.Krk.MemoryFlow.Game;
+
 public abstract class SwipeInput : MonoBehaviour {
 
     [SerializeField]
-    private Game game;
+    private GameController game;
 
     [SerializeField]
     private float MinSwipeLength = 10.0f;

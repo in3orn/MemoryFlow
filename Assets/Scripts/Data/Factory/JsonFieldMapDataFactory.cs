@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.IO;
 using System.Collections;
-using Dev.Krk.MemoryFlow.Data.Controller;
+using Dev.Krk.MemoryFlow.Data.Initializers;
 
 public class JsonFieldMapDataFactory : MonoBehaviour
 {
     [SerializeField]
-    private LevelsDataController levelsDataController;
+    private LevelsDataInitializer levelsDataController;
 
     public FieldMapData Create(int level)
     {

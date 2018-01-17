@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using Dev.Krk.MemoryFlow.Game;
 
 public class Arrows : MonoBehaviour {
 
@@ -16,7 +16,7 @@ public class Arrows : MonoBehaviour {
     private SpriteRenderer rightArrow;
 
     [SerializeField]
-    private Level level;
+    private LevelController level;
 
     void Update()
     {

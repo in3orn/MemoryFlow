@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+using Dev.Krk.MemoryFlow.Game;
+
 public class HUDController : MonoBehaviour {
 
     [SerializeField]
@@ -10,17 +12,15 @@ public class HUDController : MonoBehaviour {
     private Text score;
 
     [SerializeField]
-    private Game game;
+    private GameController game;
 
     void Start()
     {
-        game.OnFinished += updateScore;
         game.OnFailed += hideHeart;
     }
 
     private void updateScore()
     {
-        score.text = (10 * game.GreenGems + game.YellowGems).ToString("# ###");
 		foreach (HeartImage heart in hearts) {
 			heart.Show ();
 		}

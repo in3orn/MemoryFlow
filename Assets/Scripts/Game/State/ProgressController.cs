@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
-using Dev.Krk.MemoryFlow.Data.Controller;
+using Dev.Krk.MemoryFlow.Data.Initializers;
 
 namespace Dev.Krk.MemoryFlow.Game.State
 {
     public class ProgressController : MonoBehaviour
     {
         [SerializeField]
-        private FlowsDataController flowsDataController;
+        private FlowsDataInitializer flowsDataController;
 
         private int flow;
 
