@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,6 +10,8 @@ namespace Dev.Krk.MemoryFlow.Game
 {
     public class LevelController : MonoBehaviour
     {
+        public UnityAction OnLevelCompleted;
+
         public delegate void StartedAction();
         public event StartedAction OnStarted;
 
@@ -307,6 +310,7 @@ namespace Dev.Krk.MemoryFlow.Game
             state = StateEnum.Finished;
             fieldMap.Hide();
             hideActors();
+            if(OnLevelCompleted != null) OnLevelCompleted();
         }
 
         public void RestartLevel()
