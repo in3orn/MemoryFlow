@@ -7,49 +7,13 @@ namespace Dev.Krk.MemoryFlow.Game
 {
     public class GameController : MonoBehaviour
     {
-        public UnityAction OnFlowCompleted { get; set; }
-        public UnityAction OnGameCompleted { get; set; }
-        public UnityAction OnLevelFailed { get; set; }
-
-        public delegate void StartedAction();
-        public event StartedAction OnStarted;
-
-        public delegate void FailedAction();
-        public event FailedAction OnFailed;
+        public UnityAction OnFlowCompleted;
+        public UnityAction OnGameCompleted;
+        public UnityAction OnLevelFailed;
 
         [SerializeField]
-        private LevelController level;
-
-        [SerializeField]
-        private int startLives = 3;
-
-        private int lives;
-
-        [SerializeField]
-        private int minLevelDifficulty = 10;
-
-        [SerializeField]
-        private int failedLevelDrop = 3;
-
-
-
-        [SerializeField]
-        PopUpCanvas gameOverCanvas;
-
-
-
-        [SerializeField]
-        PopUpCanvas tutorialCanvas;
-
-        [SerializeField]
-        private float showTutorialDelay = 5;
-
-        private float startLevelTime;
-
-        private bool tutorialShown = false;
-
-
-
+        private LevelController levelController;
+        
         [SerializeField]
         private ProgressController progressController;
 
@@ -59,10 +23,11 @@ namespace Dev.Krk.MemoryFlow.Game
         [SerializeField]
         private ScoreController scoreController;
 
-        public int Lives
-        {
-            get { return lives; }
-        }
+        [SerializeField]
+        private LivesController livesController;
+
+        [SerializeField]
+        private TutorialController tutorialController;
 
         void Start()
         {
@@ -70,41 +35,37 @@ namespace Dev.Krk.MemoryFlow.Game
 
         void OnEnable()
         {
-            level.OnMoved += updateTutorial;
-            level.OnFinished += ProcessLevelCompleted;
-            level.OnFailed += ProcessLevelFailed;
-            level.OnDied += updateLives;
+            levelController.OnMoved += ProcessPlayerMoved;
+            levelController.OnFinished += ProcessLevelCompleted;
+            levelController.OnFailed += ProcessLevelFailed;
+            levelController.OnDied += ProcessPlayerDied;
         }
 
         void OnDisable()
         {
-            if (level != null)
+            if (levelController != null)
             {
-                level.OnMoved -= updateTutorial;
-                level.OnFinished -= ProcessLevelCompleted;
-                level.OnFailed -= ProcessLevelFailed;
-                level.OnDied -= updateLives;
-            }
-        }
-
-        void Update()
-        {
-            if (!tutorialShown && Time.time - startLevelTime > showTutorialDelay)
-            {
-                tutorialCanvas.Show();
-                tutorialShown = true;
+                levelController.OnMoved -= ProcessPlayerMoved;
+                levelController.OnFinished -= ProcessLevelCompleted;
+                levelController.OnFailed -= ProcessLevelFailed;
+                levelController.OnDied -= ProcessPlayerDied;
             }
         }
 
         public void StartNewRun()
         {
-            startLevel();
+            livesController.ResetLives();
+            StartLevel();
+        }
 
-            gameOverCanvas.Hide();
+        private void ProcessPlayerMoved()
+        {
+            tutorialController.Hide();
         }
 
         private void ProcessLevelCompleted()
         {
+            tutorialController.Deactivate();
             scoreController.IncreaseScore();
             progressController.NextLevel();
 
@@ -125,68 +86,53 @@ namespace Dev.Krk.MemoryFlow.Game
             }
             else
             {
-                startLevel();
+                StartLevel();
             }
         }
 
         public void ProcessLevelFailed()
         {
+            tutorialController.Deactivate();
             progressController.ResetFlow(scoreController.GlobalScore);
             if (OnLevelFailed != null) OnLevelFailed();
         }
 
-        public void updateLives()
+        public void ProcessPlayerDied()
         {
-            lives--;
-            if (lives <= 0)
+            livesController.DecreaseLives();
+            if (livesController.Lives <= 0)
             {
-                level.FailLevel();
+                levelController.FailLevel();
             }
-            OnFailed();
         }
 
-        private void startLevel()
+        private void StartLevel()
         {
-            lives = startLives;
-            level.Clear();
+            tutorialController.Activate();
+            levelController.Clear();
 
             FlowData flowData = flowsController.Data.Flows[progressController.Flow];
-            level.Init(flowData.Levels[progressController.Level]);
-
-            startLevelTime = Time.time;
-            tutorialShown = false;
-        }
-
-        private void updateTutorial()
-        {
-            if (tutorialShown)
-            {
-                tutorialCanvas.Hide();
-            }
-            else
-            {
-                tutorialShown = true;
-            }
+            levelController.Init(flowData.Levels[progressController.Level]);
         }
 
         public void MoveLeft()
         {
-            level.MoveLeft();
+            levelController.MoveLeft();
         }
 
         public void MoveRight()
         {
-            level.MoveRight();
+            levelController.MoveRight();
         }
 
         public void MoveUp()
         {
-            level.MoveUp();
+            levelController.MoveUp();
         }
 
         public void MoveDown()
         {
-            level.MoveDown();
+            levelController.MoveDown();
         }
     }
 }
