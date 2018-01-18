@@ -14,12 +14,12 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 
         void Start()
         {
-            UpdateScoreLabel();
         }
         
         void OnEnable()
         {
             scoreController.OnScoreUpdated += UpdateScoreLabel;
+            scoreController.OnInitialized += UpdateScoreLabel;
         }
 
         void OnDisable()
@@ -27,6 +27,7 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
             if(scoreController != null)
             {
                 scoreController.OnScoreUpdated -= UpdateScoreLabel;
+                scoreController.OnInitialized -= UpdateScoreLabel;
             }
         }
 
