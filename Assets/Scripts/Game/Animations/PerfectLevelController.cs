@@ -62,7 +62,7 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
 
         private void ProcessLivesUpdated()
         {
-            perfect = false;
+            perfect = livesController.Lives == livesController.StartLives;
         }
     }
 }

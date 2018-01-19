@@ -18,6 +18,8 @@ namespace Dev.Krk.MemoryFlow.Game.State
 
         public int Lives { get { return lives; } }
 
+        public int StartLives { get { return startLives; } }
+
         public void DecreaseLives()
         {
             lives--;

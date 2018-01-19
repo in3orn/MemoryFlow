@@ -28,6 +28,9 @@ namespace Dev.Krk.MemoryFlow.State
         [SerializeField]
         private ScoreController scoreController;
 
+        [SerializeField]
+        private ProgressController progressController;
+
         void OnEnable()
         {
             initializer.OnInitialized += ProcessResourcesInitialized;
@@ -98,6 +101,7 @@ namespace Dev.Krk.MemoryFlow.State
         {
             if(scoreController.GlobalScore > 0)
             {
+                progressController.ResetFlow(scoreController.GlobalScore);
                 ShowSummary();
             }
             else

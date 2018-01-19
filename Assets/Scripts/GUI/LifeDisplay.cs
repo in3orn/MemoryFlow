@@ -10,10 +10,16 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
         private LivesController livesController;
 
         [SerializeField]
-        private Image lifeRenderer;
-
-        [SerializeField]
         private int lifeIndex;
+
+        private Animator animator;
+
+        private bool shown;
+
+        void Awake()
+        {
+            animator = GetComponent<Animator>();
+        }
 
         void Start()
         {
@@ -35,9 +41,16 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 
         private void UpdateLife()
         {
-            Color c = lifeRenderer.color;
-            float a = livesController.Lives > lifeIndex ? 1f : 0f;
-            lifeRenderer.color = new Color(c.r, c.g, c.b, a);
+            if (!shown && livesController.Lives > lifeIndex)
+            {
+                animator.SetTrigger("Show");
+                shown = true;
+            }
+            else if(shown && livesController.Lives <= lifeIndex)
+            {
+                animator.SetTrigger("Hide");
+                shown = false;
+            }
         }
     }
 }
