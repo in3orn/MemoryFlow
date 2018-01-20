@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Globalization;
+using UnityEngine;
 using UnityEngine.UI;
 using Dev.Krk.MemoryFlow.Game.State;
 
@@ -33,7 +34,9 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 
         private void UpdateScoreLabel()
         {
-            scoreLabel.text = scoreController.GlobalScore.ToString("# ##0");
+            NumberFormatInfo format = CultureInfo.InvariantCulture.NumberFormat.Clone() as NumberFormatInfo;
+            format.NumberGroupSeparator = " ";
+            scoreLabel.text = scoreController.GlobalScore.ToString("#,0", format);
         }
     }
 }

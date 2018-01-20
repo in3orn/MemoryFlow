@@ -23,6 +23,8 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
 
         private bool perfect;
 
+        private int index;
+
         void OnEnable()
         {
             levelController.OnStarted += ProcessLevelStarted;
@@ -54,7 +56,8 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
         {
             if (perfect)
             {
-                int index = Mathf.FloorToInt(Random.value * ((float)completedTexts.Length - 0.01f));
+                index += Random.Range(1, completedTexts.Length-1);
+                index %= completedTexts.Length;
                 text.text = completedTexts[index];
                 animator.SetTrigger("OnShow");
             }
