@@ -28,7 +28,7 @@ public class Zoomer : MonoBehaviour {
 	}
 
 	void Start() {
-		level.OnStarted += adapt;
+		level.OnLevelStarted += adapt;
 	}
 
 	private void adapt() {

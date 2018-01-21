@@ -35,20 +35,20 @@ namespace Dev.Krk.MemoryFlow.Game
 
         void OnEnable()
         {
-            levelController.OnMoved += ProcessPlayerMoved;
-            levelController.OnFinished += ProcessLevelCompleted;
-            levelController.OnFailed += ProcessLevelFailed;
-            levelController.OnDied += ProcessPlayerDied;
+            levelController.OnLevelEnded+= ProcessLevelEnded;
+
+            levelController.OnPlayerMoved += ProcessPlayerMoved;
+            levelController.OnPlayerFailed += ProcessPlayerDied;
         }
 
         void OnDisable()
         {
             if (levelController != null)
             {
-                levelController.OnMoved -= ProcessPlayerMoved;
-                levelController.OnFinished -= ProcessLevelCompleted;
-                levelController.OnFailed -= ProcessLevelFailed;
-                levelController.OnDied -= ProcessPlayerDied;
+                levelController.OnLevelEnded -= ProcessLevelEnded;
+
+                levelController.OnPlayerMoved -= ProcessPlayerMoved;
+                levelController.OnPlayerFailed -= ProcessPlayerDied;
             }
         }
 
@@ -61,6 +61,18 @@ namespace Dev.Krk.MemoryFlow.Game
         private void ProcessPlayerMoved()
         {
             tutorialController.Hide();
+        }
+
+        private void ProcessLevelEnded()
+        {
+            if(levelController.State == LevelController.StateEnum.Failed)
+            {
+                ProcessLevelFailed();
+            }
+            else
+            {
+                ProcessLevelCompleted();
+            }
         }
 
         private void ProcessLevelCompleted()
@@ -99,6 +111,7 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public void ProcessPlayerDied()
         {
+            //TODO could be done directly in livesController
             livesController.DecreaseLives();
             if (livesController.Lives <= 0)
             {

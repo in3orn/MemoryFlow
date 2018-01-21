@@ -8,6 +8,7 @@ namespace Dev.Krk.MemoryFlow.Game.State
     public class ScoreController : ResourcesInitializer
     {
         public UnityAction OnScoreUpdated;
+        public UnityAction OnScoreTransfered;
 
         private readonly string SCORE = "Score";
 
@@ -46,6 +47,7 @@ namespace Dev.Krk.MemoryFlow.Game.State
         public void TransferScore()
         {
             StartCoroutine(TransferScoreInternal());
+            if (OnScoreTransfered != null) OnScoreTransfered();
         }
 
         private IEnumerator TransferScoreInternal()

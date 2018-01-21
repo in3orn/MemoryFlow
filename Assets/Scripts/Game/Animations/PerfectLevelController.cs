@@ -27,7 +27,7 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
 
         void OnEnable()
         {
-            levelController.OnStarted += ProcessLevelStarted;
+            levelController.OnLevelStarted += ProcessLevelStarted;
             levelController.OnLevelCompleted += ProcessLevelCompleted;
 
             livesController.OnLivesUpdated += ProcessLivesUpdated;
@@ -37,7 +37,7 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
         {
             if (levelController != null)
             {
-                levelController.OnStarted -= ProcessLevelStarted;
+                levelController.OnLevelStarted -= ProcessLevelStarted;
                 levelController.OnLevelCompleted -= ProcessLevelCompleted;
             }
 

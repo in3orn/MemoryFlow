@@ -10,24 +10,16 @@ namespace Dev.Krk.MemoryFlow.Game
 {
     public class LevelController : MonoBehaviour
     {
+        public UnityAction OnPlayerFailed;
+        public UnityAction OnPlayerMoved;
+
+        public UnityAction OnLevelStarted;
+        public UnityAction OnLevelEnded;
+
         public UnityAction OnLevelCompleted;
+        public UnityAction OnLevelFailed;
 
-        public delegate void StartedAction();
-        public event StartedAction OnStarted;
-
-        public delegate void FinishedAction();
-        public event FinishedAction OnFinished;
-
-        public delegate void FailedAction();
-        public event FailedAction OnFailed;
-
-        public delegate void DiedAction();
-        public event DiedAction OnDied;
-
-        public delegate void MovedAction();
-        public event MovedAction OnMoved;
-
-        private enum StateEnum
+        public enum StateEnum
         {
             Idle = 0,
             Showing,
@@ -73,6 +65,8 @@ namespace Dev.Krk.MemoryFlow.Game
             get { return fieldMap.VerticalLength; }
         }
 
+        public StateEnum State { get { return state; } }
+
         void Awake()
         {
             queuedMoves = new Queue<Vector2>(5);
@@ -81,7 +75,7 @@ namespace Dev.Krk.MemoryFlow.Game
 
         void Start()
         {
-            player.OnMoved += afterMove;
+            player.OnMoved += ProcessNextMove;
 
             fieldMap.OnShown += startGame;
             fieldMap.OnHidden += FinishGame;
@@ -109,7 +103,7 @@ namespace Dev.Krk.MemoryFlow.Game
             fieldMap.ShowPreview();
             showActors();
 
-            OnStarted();
+            if(OnLevelStarted != null) OnLevelStarted();
         }
 
         public void Clear()
@@ -209,39 +203,48 @@ namespace Dev.Krk.MemoryFlow.Game
 
             if (queuedFields.Count == 0 && player.CanMove())
             {
-                performMove(field, vector);
+                PerformMove(field, vector);
             }
             else
             {
                 queuedFields.Enqueue(field);
                 queuedMoves.Enqueue(vector);
             }
-
-            OnMoved();
         }
 
-        private void performMove(Field field, Vector2 vector)
+        private void PerformMove(Field field, Vector2 vector)
         {
             if ((state == StateEnum.Showing || state == StateEnum.Playing))
             {
-                if (performAction(field))
+                if (state == StateEnum.Showing)
                 {
+                    state = StateEnum.Playing;
+                    fieldMap.ShowPlayMode();
+                }
+
+                if (field.Valid)
+                {
+                    field.Unmask();
                     player.Move(vector * Field.SIZE);
+                    if (OnPlayerMoved != null) OnPlayerMoved();
+                    
                 }
                 else
                 {
+                    field.Break();
                     playerActualPosition = player.transform.position;
                     queuedFields.Clear();
                     queuedMoves.Clear();
+                    if (OnPlayerFailed != null) OnPlayerFailed();
                 }
             }
         }
 
-        private void afterMove()
+        private void ProcessNextMove()
         {
             if (queuedMoves.Count > 0)
             {
-                performMove(queuedFields.Dequeue(), queuedMoves.Dequeue());
+                PerformMove(queuedFields.Dequeue(), queuedMoves.Dequeue());
             }
         }
 
@@ -274,29 +277,6 @@ namespace Dev.Krk.MemoryFlow.Game
             return position / Field.SIZE;
         }
 
-        private bool performAction(Field field)
-        {
-            if (state == StateEnum.Showing)
-            {
-                state = StateEnum.Playing;
-                fieldMap.ShowPlayMode();
-            }
-
-            if (!field.Valid)
-            {
-                field.Break();
-                RestartLevel();
-
-                return false;
-            }
-            else
-            {
-                field.Unmask();
-            }
-
-            return true;
-        }
-
         private void startGame()
         {
             if (state == StateEnum.Idle || state == StateEnum.Failed)
@@ -310,12 +290,8 @@ namespace Dev.Krk.MemoryFlow.Game
             state = StateEnum.Finished;
             fieldMap.Hide();
             hideActors();
-            if(OnLevelCompleted != null) OnLevelCompleted();
-        }
 
-        public void RestartLevel()
-        {
-            OnDied();
+            if(OnLevelCompleted != null) OnLevelCompleted();
         }
 
         public void FailLevel()
@@ -323,25 +299,19 @@ namespace Dev.Krk.MemoryFlow.Game
             state = StateEnum.Failed;
             fieldMap.Hide();
             hideActors();
+
+            if (OnLevelFailed != null) OnLevelFailed();
         }
 
         public void FinishGame()
         {
-            StartCoroutine(finishGame());
+            StartCoroutine(FinishGameInternal());
         }
 
-        private IEnumerator finishGame()
+        private IEnumerator FinishGameInternal()
         {
             yield return new WaitForSeconds(finishDuration);
-            switch (state)
-            {
-                case StateEnum.Finished:
-                    OnFinished();
-                    break;
-                case StateEnum.Failed:
-                    OnFailed();
-                    break;
-            }
+            if (OnLevelEnded != null) OnLevelEnded();
         }
 
         private void showActors()
