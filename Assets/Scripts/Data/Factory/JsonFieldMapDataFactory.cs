@@ -31,12 +31,20 @@ public class JsonFieldMapDataFactory : MonoBehaviour
         {
             if(mapData.VerticalFields.Length == levelData.Size)
             {
-                float difficulty = CalculateDifficulty(mapData);
-                float normalizedDifficulty = (difficulty - minMaxDifficulty.x) / (minMaxDifficulty.y - minMaxDifficulty.x);
-                if(levelData.MinDifficulty <= normalizedDifficulty && normalizedDifficulty <= levelData.MaxDifficulty)
+                if(minMaxDifficulty.y > minMaxDifficulty.x)
+                {
+                    float difficulty = CalculateDifficulty(mapData);
+                    float normalizedDifficulty = (difficulty - minMaxDifficulty.x) / (minMaxDifficulty.y - minMaxDifficulty.x);
+                    if (levelData.MinDifficulty <= normalizedDifficulty && normalizedDifficulty <= levelData.MaxDifficulty)
+                    {
+                        result.Add(mapData);
+                    }
+                }
+                else
                 {
                     result.Add(mapData);
                 }
+                
             }
         }
 

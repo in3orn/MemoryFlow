@@ -15,6 +15,8 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             Down
         }
 
+        public int MaxNumOfTurnsLimit { get; set; }
+
         public int MaxPoolSize { get; set; }
 
         private int poolSize;
@@ -67,7 +69,7 @@ namespace Dev.Krk.MemoryFlow.Game.Level
         {
             List<MapData> result = new List<MapData>();
 
-            if (poolSize < MaxPoolSize)
+            if (poolSize < MaxPoolSize && data.NumOfTurns <= MaxNumOfTurnsLimit)
             {
                 if (IsPathCompleted(data, posX, posY))
                 {

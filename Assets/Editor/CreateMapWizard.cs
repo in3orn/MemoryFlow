@@ -15,6 +15,8 @@ namespace Dev.Krk.MemoryFlow.Editor
 
         public int MaxPoolSize = 5000;
 
+        public int MaxNumOfTurns = 15;
+
         [MenuItem("MemoryFlow/Create maps")]
         static void CreateWindow()
         {
@@ -57,6 +59,7 @@ namespace Dev.Krk.MemoryFlow.Editor
             List<MapData> result = new List<MapData>();
             PathFinder pathFinder = new PathFinder();
             pathFinder.MaxPoolSize = MaxPoolSize;
+            pathFinder.MaxNumOfTurnsLimit = MaxNumOfTurns;
 
             int prevCount = 0;
 
