@@ -13,6 +13,8 @@ namespace Dev.Krk.MemoryFlow.Editor
 
         public int MaxSize = 3;
 
+        public int MaxPoolSize = 5000;
+
         [MenuItem("MemoryFlow/Create maps")]
         static void CreateWindow()
         {
@@ -54,10 +56,16 @@ namespace Dev.Krk.MemoryFlow.Editor
         {
             List<MapData> result = new List<MapData>();
             PathFinder pathFinder = new PathFinder();
+            pathFinder.MaxPoolSize = MaxPoolSize;
+
+            int prevCount = 0;
 
             for (int i = 1; i <= MaxSize; i++)
             {
+                Debug.Log("Start process for maps: " + i + "x" + i);
                 result.AddRange(pathFinder.FindPaths(i, i));
+                Debug.Log("Maps created: " + (result.Count - prevCount));
+                prevCount = result.Count;
             }
 
             return result.ToArray();

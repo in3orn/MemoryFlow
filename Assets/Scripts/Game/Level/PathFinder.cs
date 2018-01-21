@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
+using System.Collections.Generic;
 using Dev.Krk.MemoryFlow.Data;
 
 namespace Dev.Krk.MemoryFlow.Game.Level
@@ -14,8 +15,14 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             Down
         }
 
+        public int MaxPoolSize { get; set; }
+
+        private int poolSize;
+
         public List<MapData> FindPaths(int width, int height)
         {
+            poolSize = 0;
+
             MapData data = CreateData(width, height);
             return FindPaths(data, 0, 0, Direction.None);
         }
@@ -60,27 +67,35 @@ namespace Dev.Krk.MemoryFlow.Game.Level
         {
             List<MapData> result = new List<MapData>();
 
-            if (IsPathCompleted(data, posX, posY))
+            if (poolSize < MaxPoolSize)
             {
-                result.Add(data);
-            }
-            else
-            {
-                if (CanMoveLeft(data, posX, posY))
+                if (IsPathCompleted(data, posX, posY))
                 {
-                    result.AddRange(MoveLeft(data, posX, posY, direction));
+                    result.Add(data);
+                    poolSize++;
+                    if (poolSize % (MaxPoolSize / 10) == 0)
+                    {
+                        Debug.Log("Work in progress: " + poolSize + "/" + MaxPoolSize);
+                    }
                 }
-                if (CanMoveUp(data, posX, posY))
+                else
                 {
-                    result.AddRange(MoveUp(data, posX, posY, direction));
-                }
-                if (CanMoveRight(data, posX, posY))
-                {
-                    result.AddRange(MoveRight(data, posX, posY, direction));
-                }
-                if (CanMoveDown(data, posX, posY))
-                {
-                    result.AddRange(MoveDown(data, posX, posY, direction));
+                    if (CanMoveLeft(data, posX, posY))
+                    {
+                        result.AddRange(MoveLeft(data, posX, posY, direction));
+                    }
+                    if (CanMoveUp(data, posX, posY))
+                    {
+                        result.AddRange(MoveUp(data, posX, posY, direction));
+                    }
+                    if (CanMoveRight(data, posX, posY))
+                    {
+                        result.AddRange(MoveRight(data, posX, posY, direction));
+                    }
+                    if (CanMoveDown(data, posX, posY))
+                    {
+                        result.AddRange(MoveDown(data, posX, posY, direction));
+                    }
                 }
             }
 
