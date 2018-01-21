@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Dev.Krk.MemoryFlow.Game.State;
 
 namespace Dev.Krk.MemoryFlow.Game.Level
 {
