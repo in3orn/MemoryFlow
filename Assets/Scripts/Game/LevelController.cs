@@ -31,7 +31,7 @@ namespace Dev.Krk.MemoryFlow.Game
         private StateEnum state;
 
         [SerializeField]
-        private LevelProvider levelProvider;
+        private MapDataProvider levelProvider;
 
         [SerializeField]
         private FieldMap fieldMap;
@@ -83,9 +83,9 @@ namespace Dev.Krk.MemoryFlow.Game
             finish.OnFinished += FinishLevel;
         }
 
-        public void Init(int level)
+        public void Init(int flow, int level)
         {
-            fieldMap.Init(levelProvider.GetMapData(level));
+            fieldMap.Init(levelProvider.GetMapData(flow, level));
 
             int sx = fieldMap.HorizontalLength - 1;
             int sy = fieldMap.VerticalLength - 1;

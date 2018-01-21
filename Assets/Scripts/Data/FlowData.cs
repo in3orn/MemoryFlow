@@ -1,8 +1,12 @@
 ﻿using System;
 
-[Serializable]
-public class FlowData
+namespace Dev.Krk.MemoryFlow.Data
 {
-    public int Score;
-	public int[] Levels;
+    [Serializable]
+    public class FlowData
+    {
+        public int ScoreLock;
+
+        public LevelData[] Levels;
+    }
 }

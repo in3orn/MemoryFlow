@@ -3,8 +3,8 @@
 namespace Dev.Krk.MemoryFlow.Data
 {
     [Serializable]
-    public class FlowsData
+    public class MapsData
     {
-        public FlowData[] Flows;
+        public MapData[] Maps;
     }
 }

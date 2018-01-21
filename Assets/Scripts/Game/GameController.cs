@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using Dev.Krk.MemoryFlow.Game.State;
-using Dev.Krk.MemoryFlow.Data.Initializers;
 
 namespace Dev.Krk.MemoryFlow.Game
 {
@@ -16,9 +15,6 @@ namespace Dev.Krk.MemoryFlow.Game
         
         [SerializeField]
         private ProgressController progressController;
-
-        [SerializeField]
-        private FlowsDataInitializer flowsController;
 
         [SerializeField]
         private ScoreController scoreController;
@@ -111,7 +107,7 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public void ProcessPlayerDied()
         {
-            //TODO could be done directly in livesController
+            //TODO could be done directly in livesController? but what with failing level :P
             livesController.DecreaseLives();
             if (livesController.Lives <= 0)
             {
@@ -123,9 +119,7 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             tutorialController.Activate();
             levelController.Clear();
-
-            FlowData flowData = flowsController.Data.Flows[progressController.Flow];
-            levelController.Init(flowData.Levels[progressController.Level]);
+            levelController.Init(progressController.Flow, progressController.Level);
         }
 
         public void MoveLeft()

@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using Dev.Krk.MemoryFlow.Data;
 
 namespace Dev.Krk.MemoryFlow.Game.Level
 {
@@ -15,15 +14,15 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             Down
         }
 
-        public List<VariantData> FindPaths(int width, int height)
+        public List<MapData> FindPaths(int width, int height)
         {
-            VariantData data = CreateData(width, height);
+            MapData data = CreateData(width, height);
             return FindPaths(data, 0, 0, Direction.None);
         }
 
-        private VariantData CreateData(int width, int height)
+        private MapData CreateData(int width, int height)
         {
-            VariantData data = new VariantData
+            MapData data = new MapData
             {
                 VerticalFields = CreateRows(width + 1, height),
                 HorizontalFields = CreateRows(width, height + 1)
@@ -57,9 +56,9 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             return fields;
         }
 
-        private List<VariantData> FindPaths(VariantData data, int posX, int posY, Direction direction)
+        private List<MapData> FindPaths(MapData data, int posX, int posY, Direction direction)
         {
-            List<VariantData> result = new List<VariantData>();
+            List<MapData> result = new List<MapData>();
 
             if (IsPathCompleted(data, posX, posY))
             {
@@ -88,32 +87,32 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             return result;
         }
 
-        private bool IsPathCompleted(VariantData data, int posX, int posY)
+        private bool IsPathCompleted(MapData data, int posX, int posY)
         {
             return posX == data.HorizontalFields[0].Fields.Length && posY == data.VerticalFields.Length;
         }
 
-        private bool CanMoveUp(VariantData data, int posX, int posY)
+        private bool CanMoveUp(MapData data, int posX, int posY)
         {
             return posY > 0 && CanVisit(data, posX, posY - 1);
         }
 
-        private bool CanMoveDown(VariantData data, int posX, int posY)
+        private bool CanMoveDown(MapData data, int posX, int posY)
         {
             return posY < data.VerticalFields.Length && CanVisit(data, posX, posY + 1);
         }
 
-        private bool CanMoveLeft(VariantData data, int posX, int posY)
+        private bool CanMoveLeft(MapData data, int posX, int posY)
         {
             return posX > 0 && CanVisit(data, posX - 1, posY);
         }
 
-        private bool CanMoveRight(VariantData data, int posX, int posY)
+        private bool CanMoveRight(MapData data, int posX, int posY)
         {
             return posX < data.HorizontalFields[0].Fields.Length && CanVisit(data, posX + 1, posY);
         }
 
-        private bool CanVisit(VariantData data, int pointX, int pointY)
+        private bool CanVisit(MapData data, int pointX, int pointY)
         {
             if (pointX > 0 && data.HorizontalFields[pointY].Fields[pointX - 1] != 0) return false;
             if (pointX < data.HorizontalFields[0].Fields.Length && data.HorizontalFields[pointY].Fields[pointX] != 0) return false;
@@ -124,37 +123,37 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             return true;
         }
 
-        private List<VariantData> MoveUp(VariantData data, int posX, int posY, Direction prevDirection)
+        private List<MapData> MoveUp(MapData data, int posX, int posY, Direction prevDirection)
         {
-            VariantData newData = CreateNewData(data, prevDirection, Direction.Up);
+            MapData newData = CreateNewData(data, prevDirection, Direction.Up);
             newData.VerticalFields[posY - 1].Fields[posX] = 1;
             return FindPaths(newData, posX, posY - 1, Direction.Up);
         }
 
-        private List<VariantData> MoveDown(VariantData data, int posX, int posY, Direction prevDirection)
+        private List<MapData> MoveDown(MapData data, int posX, int posY, Direction prevDirection)
         {
-            VariantData newData = CreateNewData(data, prevDirection, Direction.Down);
+            MapData newData = CreateNewData(data, prevDirection, Direction.Down);
             newData.VerticalFields[posY].Fields[posX] = 1;
             return FindPaths(newData, posX, posY + 1, Direction.Down);
         }
 
-        private List<VariantData> MoveLeft(VariantData data, int posX, int posY, Direction prevDirection)
+        private List<MapData> MoveLeft(MapData data, int posX, int posY, Direction prevDirection)
         {
-            VariantData newData = CreateNewData(data, prevDirection, Direction.Left);
+            MapData newData = CreateNewData(data, prevDirection, Direction.Left);
             newData.HorizontalFields[posY].Fields[posX - 1] = 1;
             return FindPaths(newData, posX - 1, posY, Direction.Left);
         }
 
-        private List<VariantData> MoveRight(VariantData data, int posX, int posY, Direction prevDirection)
+        private List<MapData> MoveRight(MapData data, int posX, int posY, Direction prevDirection)
         {
-            VariantData newData = CreateNewData(data, prevDirection, Direction.Right);
+            MapData newData = CreateNewData(data, prevDirection, Direction.Right);
             newData.HorizontalFields[posY].Fields[posX] = 1;
             return FindPaths(newData, posX + 1, posY, Direction.Right);
         }
 
-        private VariantData CreateNewData(VariantData data, Direction prevDirection, Direction direction)
+        private MapData CreateNewData(MapData data, Direction prevDirection, Direction direction)
         {
-            VariantData result = data.Clone() as VariantData;
+            MapData result = data.Clone() as MapData;
             result.PathLength++;
             if (prevDirection != Direction.None && prevDirection != direction)
             {

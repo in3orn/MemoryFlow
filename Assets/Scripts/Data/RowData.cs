@@ -1,25 +1,28 @@
 ﻿using System;
 
-[Serializable]
-public class RowData : ICloneable
+namespace Dev.Krk.MemoryFlow.Data
 {
-	public int[] Fields;
-
-    public object Clone()
+    [Serializable]
+    public class RowData : ICloneable
     {
-        return new RowData
-        {
-            Fields = CloneFields(this.Fields)
-        };
-    }
+        public int[] Fields;
 
-    private int[] CloneFields(int[] fields)
-    {
-        int[] result = new int[fields.Length];
-        for(int i = 0; i < fields.Length; i++)
+        public object Clone()
         {
-            result[i] = fields[i];
+            return new RowData
+            {
+                Fields = CloneFields(this.Fields)
+            };
         }
-        return result;
+
+        private int[] CloneFields(int[] fields)
+        {
+            int[] result = new int[fields.Length];
+            for (int i = 0; i < fields.Length; i++)
+            {
+                result[i] = fields[i];
+            }
+            return result;
+        }
     }
 }

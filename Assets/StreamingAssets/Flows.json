@@ -2,20 +2,204 @@
 	"Flows": 
 	[
 		{
-			"Score": 0,
-			"Levels": [0, 1, 1, 2, 2] 
+			"ScoreLock": 0,
+			"Levels": [
+				{
+					"Size": 1,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 1
+				},
+				{
+					"Size": 2,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.5
+				},
+				{
+					"Size": 2,
+					"MinDifficulty": 0.5,
+					"MaxDifficulty": 1.0
+				},
+				{
+					"Size": 3,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.25
+				},
+				{
+					"Size": 3,
+					"MinDifficulty": 0.25,
+					"MaxDifficulty": 0.5
+				}
+			]
 		},
 		{
-			"Score": 100,
-			"Levels": [2, 2, 3, 3, 3] 
+			"ScoreLock": 10,
+			"Levels": [
+				{
+					"Size": 3,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.25
+				},
+				{
+					"Size": 3,
+					"MinDifficulty": 0.25,
+					"MaxDifficulty": 0.5
+				},
+				{
+					"Size": 3,
+					"MinDifficulty": 0.5,
+					"MaxDifficulty": 0.75
+				},
+				{
+					"Size": 3,
+					"MinDifficulty": 0.5,
+					"MaxDifficulty": 0.75
+				},
+				{
+					"Size": 3,
+					"MinDifficulty": 0.75,
+					"MaxDifficulty": 1
+				},
+				{
+					"Size": 3,
+					"MinDifficulty": 0.75,
+					"MaxDifficulty": 1
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.2
+				}
+			] 
 		},
 		{
-			"Score": 1000,
-			"Levels": [3, 3, 4, 4, 5] 
+			"ScoreLock": 50,
+			"Levels": [
+				{
+					"Size": 4,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.2
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.2
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.2,
+					"MaxDifficulty": 0.4
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.2,
+					"MaxDifficulty": 0.4
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.4,
+					"MaxDifficulty": 0.6
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.4,
+					"MaxDifficulty": 0.6
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.6,
+					"MaxDifficulty": 0.8
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.6,
+					"MaxDifficulty": 0.8
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.8,
+					"MaxDifficulty": 1
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.8,
+					"MaxDifficulty": 1
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.8,
+					"MaxDifficulty": 1
+				},
+				{
+					"Size": 5,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.2
+				}
+			] 
 		},
 		{
-			"Score": -1,
-			"Levels": [4, 4, 5, 5, 5] 
+			"ScoreLock": -1,
+			"Levels": [
+				{
+					"Size": 4,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.2
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.2
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.2,
+					"MaxDifficulty": 0.4
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.2,
+					"MaxDifficulty": 0.4
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.4,
+					"MaxDifficulty": 0.6
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.4,
+					"MaxDifficulty": 0.6
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.6,
+					"MaxDifficulty": 0.8
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.6,
+					"MaxDifficulty": 0.8
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.8,
+					"MaxDifficulty": 1
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.8,
+					"MaxDifficulty": 1
+				},
+				{
+					"Size": 4,
+					"MinDifficulty": 0.8,
+					"MaxDifficulty": 1
+				},
+				{
+					"Size": 5,
+					"MinDifficulty": 0,
+					"MaxDifficulty": 0.2
+				}
+			] 
 		}
 	]
 }
