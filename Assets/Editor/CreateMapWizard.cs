@@ -11,11 +11,12 @@ namespace Dev.Krk.MemoryFlow.Editor
     {
         public string OutputFile = "Maps.json";
 
-        public int MaxSize = 3;
+        public Vector2[] MapSizes = { Vector2.one, Vector2.one * 2, Vector2.one * 3, new Vector2(3, 4), Vector2.one * 4, new Vector2(4, 5), Vector2.one * 5, new Vector2(5, 6), Vector2.one * 6 };
 
-        public int MaxPoolSize = 5000;
+        public int MaxPoolSize = 10000;
 
-        public int MaxNumOfTurns = 15;
+        public float MinLengthToTurnsRatio = 1.0f;
+        public float MaxLengthToTurnsRatio = 1.75f;
 
         [MenuItem("MemoryFlow/Create maps")]
         static void CreateWindow()
@@ -31,9 +32,21 @@ namespace Dev.Krk.MemoryFlow.Editor
 
         private bool ValidateInput()
         {
-            if (MaxSize < 1)
+            if (MaxPoolSize < 1)
             {
                 errorString = "Max Size must be positive.";
+                return false;
+            }
+
+            if (MinLengthToTurnsRatio < 1)
+            {
+                errorString = "Min Length To Turn Ratio must be 1+.";
+                return false;
+            }
+
+            if (MaxLengthToTurnsRatio < MinLengthToTurnsRatio)
+            {
+                errorString = "Max Length To Turn Ratio must be bigger than Min Length To Turns Ratio.";
                 return false;
             }
 
@@ -59,14 +72,15 @@ namespace Dev.Krk.MemoryFlow.Editor
             List<MapData> result = new List<MapData>();
             PathFinder pathFinder = new PathFinder();
             pathFinder.MaxPoolSize = MaxPoolSize;
-            pathFinder.MaxNumOfTurnsLimit = MaxNumOfTurns;
+            pathFinder.MinLengthToTurnsRatio = MinLengthToTurnsRatio;
+            pathFinder.MaxLengthToTurnsRatio = MaxLengthToTurnsRatio;
 
             int prevCount = 0;
 
-            for (int i = 1; i <= MaxSize; i++)
+            foreach (Vector2 mapSize in MapSizes)
             {
-                Debug.Log("Start process for maps: " + i + "x" + i);
-                result.AddRange(pathFinder.FindPaths(i, i));
+                Debug.Log("Start process for maps: " + (int)mapSize.x + "x" + (int)mapSize.y);
+                result.AddRange(pathFinder.FindPaths((int)mapSize.x, (int)mapSize.y));
                 Debug.Log("Maps created: " + (result.Count - prevCount));
                 prevCount = result.Count;
             }

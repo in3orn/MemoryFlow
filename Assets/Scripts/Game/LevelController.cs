@@ -87,8 +87,8 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             fieldMap.Init(levelProvider.GetMapData(flow, level));
 
-            int sx = fieldMap.HorizontalLength - 1;
-            int sy = fieldMap.VerticalLength - 1;
+            int sx = fieldMap.HorizontalLength;
+            int sy = fieldMap.VerticalLength;
 
             finish.Init(new Vector2(sx, sy) * Field.SIZE, fieldMap.ShowInterval, fieldMap.HideInterval);
             player.Init(Vector2.zero, fieldMap.ShowInterval, fieldMap.HideInterval);
@@ -113,7 +113,7 @@ namespace Dev.Krk.MemoryFlow.Game
 
         private void initCenter()
         {
-            center.transform.position = new Vector2((fieldMap.HorizontalLength - 1) * Field.SIZE, (fieldMap.VerticalLength - 1) * Field.SIZE) * 0.5f;
+            center.transform.position = new Vector2(fieldMap.HorizontalLength * Field.SIZE, fieldMap.VerticalLength * Field.SIZE) * 0.5f;
         }
 
         public bool CanMoveLeft()

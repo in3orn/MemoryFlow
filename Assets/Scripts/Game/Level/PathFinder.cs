@@ -15,7 +15,8 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             Down
         }
 
-        public int MaxNumOfTurnsLimit { get; set; }
+        public float MinLengthToTurnsRatio { get; set; }
+        public float MaxLengthToTurnsRatio { get; set; }
 
         public int MaxPoolSize { get; set; }
 
@@ -69,15 +70,19 @@ namespace Dev.Krk.MemoryFlow.Game.Level
         {
             List<MapData> result = new List<MapData>();
 
-            if (poolSize < MaxPoolSize && data.NumOfTurns <= MaxNumOfTurnsLimit)
+            if (poolSize < MaxPoolSize)
             {
                 if (IsPathCompleted(data, posX, posY))
                 {
-                    result.Add(data);
-                    poolSize++;
-                    if (poolSize % (MaxPoolSize / 10) == 0)
+                    float ratio = data.PathLength / data.NumOfTurns;
+                    if ((MinLengthToTurnsRatio <= ratio && ratio <= MaxLengthToTurnsRatio) || data.PathLength < 10)
                     {
-                        Debug.Log("Work in progress: " + poolSize + "/" + MaxPoolSize);
+                        result.Add(data);
+                        poolSize++;
+                        if (poolSize % (MaxPoolSize / 10) == 0)
+                        {
+                            Debug.Log("Work in progress: " + poolSize + "/" + MaxPoolSize);
+                        }
                     }
                 }
                 else

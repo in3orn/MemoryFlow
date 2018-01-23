@@ -25,11 +25,11 @@ public class JsonFieldMapDataFactory : MonoBehaviour
     {
         List<MapData> result = new List<MapData>();
 
-        Vector2 minMaxDifficulty = CalculateMinMaxDifficulty(levelData.Size);
+        Vector2 minMaxDifficulty = CalculateMinMaxDifficulty(levelData.Width, levelData.Height);
 
         foreach(MapData mapData in mapsDataInitializer.Data.Maps)
         {
-            if(mapData.VerticalFields.Length == levelData.Size)
+            if(IsMatchingSize(mapData, levelData.Width, levelData.Height))
             {
                 if(minMaxDifficulty.y > minMaxDifficulty.x)
                 {
@@ -51,13 +51,13 @@ public class JsonFieldMapDataFactory : MonoBehaviour
         return result;
     }
 
-    private Vector2 CalculateMinMaxDifficulty(int size)
+    private Vector2 CalculateMinMaxDifficulty(int width, int height)
     {
         float min = Mathf.Infinity;
         float max = Mathf.NegativeInfinity;
         foreach (MapData mapData in mapsDataInitializer.Data.Maps)
         {
-            if (mapData.VerticalFields.Length == size)
+            if (IsMatchingSize(mapData, width, height))
             {
                 float difficulty = CalculateDifficulty(mapData);
                 if (difficulty < min)
@@ -67,6 +67,11 @@ public class JsonFieldMapDataFactory : MonoBehaviour
             }
         }
         return new Vector2(min, max);
+    }
+
+    private bool IsMatchingSize(MapData mapData, int width, int height)
+    {
+        return mapData.HorizontalFields[0].Fields.Length == width && mapData.VerticalFields.Length == height;
     }
 
     private float CalculateDifficulty(MapData mapData)
