@@ -47,8 +47,8 @@ namespace Dev.Krk.MemoryFlow.Game.State
 
             for (flow = 0; flow < flowsDataController.Data.Flows.Length; flow++)
             {
-                if (flowsDataController.Data.Flows[flow].Score < 0) break;
-                if (flowsDataController.Data.Flows[flow].Score > score) break;
+                if (flowsDataController.Data.Flows[flow].ScoreLock < 0) break;
+                if (flowsDataController.Data.Flows[flow].ScoreLock > score) break;
             }
         }
     }

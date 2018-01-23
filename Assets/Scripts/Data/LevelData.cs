@@ -1,11 +1,13 @@
 ﻿using System;
 
-[Serializable]
-public class LevelData
+namespace Dev.Krk.MemoryFlow.Data
 {
-    public int Width;
-    public int Height;
-    public string Name;
-
-	public VariantData[] Variants;
+    [Serializable]
+    public class LevelData
+    {
+        public int Width;
+        public int Height;
+        public float MinDifficulty;
+        public float MaxDifficulty;
+    }
 }

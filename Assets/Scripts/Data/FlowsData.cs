@@ -1,7 +1,10 @@
 ﻿using System;
 
-[Serializable]
-public class FlowsData
+namespace Dev.Krk.MemoryFlow.Data
 {
-	public FlowData[] Flows;
+    [Serializable]
+    public class FlowsData
+    {
+        public FlowData[] Flows;
+    }
 }

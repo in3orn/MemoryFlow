@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+using Dev.Krk.MemoryFlow.Data;
 
 public class FieldMap : MonoBehaviour
 {
@@ -62,12 +63,12 @@ public class FieldMap : MonoBehaviour
 
     public int HorizontalLength
     {
-        get { return horizontalFields.GetLength(0); }
+        get { return horizontalFields.GetLength(1); }
     }
 
     public int VerticalLength
     {
-        get { return verticalFields.GetLength(1); }
+        get { return verticalFields.GetLength(0); }
     }
 
     public float ShowInterval { get { return showInterval; } }
@@ -86,7 +87,7 @@ public class FieldMap : MonoBehaviour
 
     public bool CanMoveLeft(int x, int y)
     {
-        if (x >= 0 && y < VerticalLength)
+        if (x >= 0 && y < VerticalLength + 1)
         {
             Field field = GetHorizontalField(x, y);
             return !field.Broken;
@@ -97,7 +98,7 @@ public class FieldMap : MonoBehaviour
 
     public bool CanMoveRight(int x, int y)
     {
-        if (x < HorizontalLength - 1 && y < VerticalLength)
+        if (x < HorizontalLength && y < VerticalLength + 1)
         {
             Field field = GetHorizontalField(x, y);
             return !field.Broken;
@@ -108,7 +109,7 @@ public class FieldMap : MonoBehaviour
 
     public bool CanMoveUp(int x, int y)
     {
-        if (x < HorizontalLength && y < VerticalLength - 1)
+        if (x < HorizontalLength + 1 && y < VerticalLength)
         {
             Field field = GetVerticalField(x, y);
             return !field.Broken;
@@ -119,7 +120,7 @@ public class FieldMap : MonoBehaviour
 
     public bool CanMoveDown(int x, int y)
     {
-        if (x < HorizontalLength && y >= 0)
+        if (x < HorizontalLength + 1 && y >= 0)
         {
             Field field = GetVerticalField(x, y);
             return !field.Broken;
@@ -141,7 +142,7 @@ public class FieldMap : MonoBehaviour
 
     private IEnumerator showFields(bool all) //TODO show from player
     {
-        int size = HorizontalLength + VerticalLength;
+        int size = HorizontalLength + VerticalLength + 1;
         for (int s = 1; s < size; s++)
         {
             for (int ds = 0; ds < s; ds++)
@@ -181,7 +182,7 @@ public class FieldMap : MonoBehaviour
 
     private IEnumerator hideFields(bool all)
     {
-        int size = HorizontalLength + VerticalLength;
+        int size = HorizontalLength + VerticalLength + 1;
         for (int s = 1; s < size; s++)
         {
             for (int ds = 0; ds < s; ds++)
@@ -216,7 +217,7 @@ public class FieldMap : MonoBehaviour
 
     private IEnumerator maskFields() //TODO show from player
     {
-        int size = HorizontalLength + VerticalLength;
+        int size = HorizontalLength + VerticalLength + 1;
         for (int s = 1; s < size; s++)
         {
             for (int ds = 0; ds < s; ds++)

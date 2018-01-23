@@ -23,6 +23,8 @@ namespace Dev.Krk.MemoryFlow.Sounds
         private int numOfSlides = 4;
         private int slideIndex;
 
+        private Vector2 prevVector;
+
         void Start()
         {
 
@@ -64,12 +66,22 @@ namespace Dev.Krk.MemoryFlow.Sounds
             soundPlayer.PlaySound(SoundPlayer.SoundId.Button1 + buttonIndex);
         }
 
-        private void ProcessPlayerMoved()
+        private void ProcessPlayerMoved(Vector2 vector)
         {
             slideIndex += Random.Range(0, numOfSlides - 1);
             slideIndex %= numOfSlides;
 
-            soundPlayer.PlaySound(SoundPlayer.SoundId.Slide1 + slideIndex);
+            if(IsDirectionChanged(vector))
+            {
+                soundPlayer.PlaySound(SoundPlayer.SoundId.Slide1 + slideIndex);
+            }
+
+            prevVector = vector;
+        }
+
+        private bool IsDirectionChanged(Vector2 vector)
+        {
+            return (vector - prevVector).magnitude > 0.5f;
         }
 
         private void ProcessPlayerFailed()
@@ -79,6 +91,7 @@ namespace Dev.Krk.MemoryFlow.Sounds
 
         private void ProcessLevelCompleted()
         {
+            prevVector = Vector2.zero;
             soundPlayer.PlaySound(SoundPlayer.SoundId.LevelComplete);
         }
 

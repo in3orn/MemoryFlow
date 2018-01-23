@@ -27,16 +27,32 @@ public class Player : MonoBehaviour
 
     private CircleCollider2D circleCollider;
 
+    [SerializeField]
     private Showable showable;
 
     private float showInterval;
 
     private float hideInterval;
 
+    [SerializeField]
+    private Animator playerAnimator;
+
+    private Vector3 target;
+
+    private float velocity;
+
+    [SerializeField]
+    private float maxVelocity;
+
+    [SerializeField]
+    private float acceleration;
+
+    [SerializeField]
+    private float errorMargin;
+
     void Awake()
     {
         circleCollider = GetComponent<CircleCollider2D>();
-        showable = GetComponent<Showable>();
 
         moves = new Queue<Vector2>(2);
     }
@@ -45,6 +61,7 @@ public class Player : MonoBehaviour
     {
         state = StateEnum.Idle;
 
+        target = position;
         transform.position = position;
         transform.localScale = Vector3.one;
 
@@ -62,34 +79,80 @@ public class Player : MonoBehaviour
         return state != StateEnum.Moving;
     }
 
-    public void Move(Vector2 vector)
+    void Update()
+    {
+        Vector3 diff = target - transform.position;
+        float distance = diff.magnitude;
+
+        if (distance > errorMargin)
+        {
+            velocity += acceleration;
+            velocity = Mathf.Min(velocity, maxVelocity);
+
+            if (distance > velocity)
+            {
+                transform.position += diff.normalized * velocity;
+            }
+            else
+            {
+                transform.position = target;
+                state = StateEnum.Idle;
+                if (OnMoved != null)
+                    OnMoved();
+            }
+        }
+        else
+        {
+            velocity = 0f;
+        }
+
+        playerAnimator.SetFloat("velocity", velocity);
+    }
+
+    public void Move(Vector3 vector)
     {
         if (state != StateEnum.Moving)
         {
-            Vector2 target = (Vector2)transform.position + vector;
-            StartCoroutine(move(transform.position, target));
+            state = StateEnum.Moving;
+
+            target = transform.position + vector;
+            ChangeDirection(vector);
 
             showable.ShowDelay = (target.x / Field.SIZE + target.y / Field.SIZE) * showInterval;
             showable.HideDelay = (target.x / Field.SIZE + target.y / Field.SIZE) * hideInterval;
         }
     }
 
-    private IEnumerator move(Vector2 start, Vector2 end)
+    private void ChangeDirection(Vector2 vector)
     {
-        state = StateEnum.Moving;
+        float angle = Mathf.Atan2(vector.y, vector.x);
 
-        float t = 0f;
-        while (true)
+        while (angle < 0)
         {
-            t += Time.deltaTime / moveDuration;
-            transform.position = Vector2.Lerp(start, end, t);
-
-            if (t >= 1) break;
-            yield return null;
+            angle += Mathf.PI * 2f;
         }
 
-        state = StateEnum.Idle;
-        OnMoved();
+        while (angle > Mathf.PI * 2f)
+        {
+            angle -= Mathf.PI * 2f;
+        }
+
+        if (Mathf.Abs(angle) < 0.1f)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+        else if (Mathf.Abs(angle - Mathf.PI * 0.5f) < 0.1f)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 90);
+        }
+        else if (Mathf.Abs(angle - Mathf.PI) < 0.1f)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 180);
+        }
+        else if (Mathf.Abs(angle - Mathf.PI * 1.5f) < 0.1f)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 270);
+        }
     }
 
     public void Show()

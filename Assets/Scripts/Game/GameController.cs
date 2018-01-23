@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using Dev.Krk.MemoryFlow.Game.State;
-using Dev.Krk.MemoryFlow.Data.Initializers;
 
 namespace Dev.Krk.MemoryFlow.Game
 {
@@ -18,9 +17,6 @@ namespace Dev.Krk.MemoryFlow.Game
         private ProgressController progressController;
 
         [SerializeField]
-        private FlowsDataInitializer flowsController;
-
-        [SerializeField]
         private ScoreController scoreController;
 
         [SerializeField]
@@ -35,6 +31,8 @@ namespace Dev.Krk.MemoryFlow.Game
 
         void OnEnable()
         {
+            levelController.OnLevelCompleted += ProcessLevelCompleted;
+            levelController.OnLevelFailed += ProcessLevelFailed;
             levelController.OnLevelEnded+= ProcessLevelEnded;
 
             levelController.OnPlayerMoved += ProcessPlayerMoved;
@@ -45,6 +43,8 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             if (levelController != null)
             {
+                levelController.OnLevelCompleted -= ProcessLevelCompleted;
+                levelController.OnLevelFailed -= ProcessLevelFailed;
                 levelController.OnLevelEnded -= ProcessLevelEnded;
 
                 levelController.OnPlayerMoved -= ProcessPlayerMoved;
@@ -58,21 +58,15 @@ namespace Dev.Krk.MemoryFlow.Game
             StartLevel();
         }
 
-        private void ProcessPlayerMoved()
+        private void ProcessPlayerMoved(Vector2 vector)
         {
             tutorialController.Hide();
         }
 
-        private void ProcessLevelEnded()
+        public void ProcessLevelFailed()
         {
-            if(levelController.State == LevelController.StateEnum.Failed)
-            {
-                ProcessLevelFailed();
-            }
-            else
-            {
-                ProcessLevelCompleted();
-            }
+            tutorialController.Deactivate();
+            progressController.ResetFlow(scoreController.GlobalScore);
         }
 
         private void ProcessLevelCompleted()
@@ -80,38 +74,41 @@ namespace Dev.Krk.MemoryFlow.Game
             tutorialController.Deactivate();
             scoreController.IncreaseScore();
             progressController.NextLevel();
+        }
 
-            if (progressController.IsFlowCompleted())
+        private void ProcessLevelEnded()
+        {
+            if (levelController.State != LevelController.StateEnum.Failed)
             {
-                progressController.NextFlow();
-
-                if (progressController.IsGameCompleted())
+                if (progressController.IsFlowCompleted())
                 {
-                    progressController.ResetFlow(scoreController.GlobalScore);
+                    progressController.NextFlow();
 
-                    if (OnGameCompleted != null) OnGameCompleted();
+                    if (progressController.IsGameCompleted())
+                    {
+                        progressController.ResetFlow(scoreController.GlobalScore);
+
+                        if (OnGameCompleted != null) OnGameCompleted();
+                    }
+                    else
+                    {
+                        if (OnFlowCompleted != null) OnFlowCompleted();
+                    }
                 }
                 else
                 {
-                    if (OnFlowCompleted != null) OnFlowCompleted();
+                    StartLevel();
                 }
             }
             else
             {
-                StartLevel();
+                if (OnLevelFailed != null) OnLevelFailed();
             }
-        }
-
-        public void ProcessLevelFailed()
-        {
-            tutorialController.Deactivate();
-            progressController.ResetFlow(scoreController.GlobalScore);
-            if (OnLevelFailed != null) OnLevelFailed();
         }
 
         public void ProcessPlayerDied()
         {
-            //TODO could be done directly in livesController
+            //TODO could be done directly in livesController? but what with failing level :P
             livesController.DecreaseLives();
             if (livesController.Lives <= 0)
             {
@@ -123,9 +120,7 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             tutorialController.Activate();
             levelController.Clear();
-
-            FlowData flowData = flowsController.Data.Flows[progressController.Flow];
-            levelController.Init(flowData.Levels[progressController.Level]);
+            levelController.Init(progressController.Flow, progressController.Level);
         }
 
         public void MoveLeft()

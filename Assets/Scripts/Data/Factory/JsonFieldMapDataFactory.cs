@@ -1,25 +1,82 @@
 ﻿using UnityEngine;
-using System.IO;
-using System.Collections;
+using System.Collections.Generic;
+using Dev.Krk.MemoryFlow.Data;
 using Dev.Krk.MemoryFlow.Data.Initializers;
 
 public class JsonFieldMapDataFactory : MonoBehaviour
 {
     [SerializeField]
-    private LevelsDataInitializer levelsDataController;
+    private MapsDataInitializer mapsDataInitializer;
 
-    public FieldMapData Create(int level)
+    public FieldMapData Create(LevelData levelData)
     {
-        LevelData levelData = levelsDataController.Data.Levels[level];
+        List<MapData> maps = FilterMatchingMaps(levelData);
 
-        int variant = Mathf.FloorToInt(Random.value * (levelData.Variants.Length - 0.01F));
+        int index = Random.Range(0, maps.Count);
+        MapData mapData = maps[index];
 
-        VariantData variantData = levelData.Variants[variant];
-
-        int[,] horizontalFields = RowsToArray(variantData.HorizontalFields);
-        int[,] verticalFields = RowsToArray(variantData.VerticalFields);
+        int[,] horizontalFields = RowsToArray(mapData.HorizontalFields);
+        int[,] verticalFields = RowsToArray(mapData.VerticalFields);
 
         return new FieldMapData(horizontalFields, verticalFields);
+    }
+
+    private List<MapData> FilterMatchingMaps(LevelData levelData)
+    {
+        List<MapData> result = new List<MapData>();
+
+        Vector2 minMaxDifficulty = CalculateMinMaxDifficulty(levelData.Width, levelData.Height);
+
+        foreach(MapData mapData in mapsDataInitializer.Data.Maps)
+        {
+            if(IsMatchingSize(mapData, levelData.Width, levelData.Height))
+            {
+                if(minMaxDifficulty.y > minMaxDifficulty.x)
+                {
+                    float difficulty = CalculateDifficulty(mapData);
+                    float normalizedDifficulty = (difficulty - minMaxDifficulty.x) / (minMaxDifficulty.y - minMaxDifficulty.x);
+                    if (levelData.MinDifficulty <= normalizedDifficulty && normalizedDifficulty <= levelData.MaxDifficulty)
+                    {
+                        result.Add(mapData);
+                    }
+                }
+                else
+                {
+                    result.Add(mapData);
+                }
+                
+            }
+        }
+
+        return result;
+    }
+
+    private Vector2 CalculateMinMaxDifficulty(int width, int height)
+    {
+        float min = Mathf.Infinity;
+        float max = Mathf.NegativeInfinity;
+        foreach (MapData mapData in mapsDataInitializer.Data.Maps)
+        {
+            if (IsMatchingSize(mapData, width, height))
+            {
+                float difficulty = CalculateDifficulty(mapData);
+                if (difficulty < min)
+                    min = difficulty;
+                else if (difficulty > max)
+                    max = difficulty;
+            }
+        }
+        return new Vector2(min, max);
+    }
+
+    private bool IsMatchingSize(MapData mapData, int width, int height)
+    {
+        return mapData.HorizontalFields[0].Fields.Length == width && mapData.VerticalFields.Length == height;
+    }
+
+    private float CalculateDifficulty(MapData mapData)
+    {
+        return mapData.PathLength + 4 * mapData.NumOfTurns;
     }
 
     private int[,] RowsToArray(RowData[] rows)
