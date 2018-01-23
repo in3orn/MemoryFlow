@@ -86,7 +86,6 @@ public class Player : MonoBehaviour
 
         if (distance > errorMargin)
         {
-            state = StateEnum.Moving;
             velocity += acceleration;
             velocity = Mathf.Min(velocity, maxVelocity);
 
@@ -114,9 +113,10 @@ public class Player : MonoBehaviour
     {
         if (state != StateEnum.Moving)
         {
+            state = StateEnum.Moving;
+
             target = transform.position + vector;
             ChangeDirection(vector);
-            //StartCoroutine(Move(transform.position, target));
 
             showable.ShowDelay = (target.x / Field.SIZE + target.y / Field.SIZE) * showInterval;
             showable.HideDelay = (target.x / Field.SIZE + target.y / Field.SIZE) * hideInterval;
@@ -153,31 +153,6 @@ public class Player : MonoBehaviour
         {
             transform.rotation = Quaternion.Euler(0, 0, 270);
         }
-    }
-
-    private IEnumerator Move(Vector2 start, Vector2 end)
-    {
-        state = StateEnum.Moving;
-
-        float t = 0f;
-        while (true)
-        {
-            t += Time.deltaTime / moveDuration;
-            transform.position = Vector2.Lerp(start, end, t);
-
-            if (t >= 1) break;
-            yield return null;
-
-            playerAnimator.SetFloat("velocity", 1.0f);
-        }
-
-        //TODO change to update routine - better for velocity checking, etc.
-        // + queue, then can automatically extend move to another field
-        // + size in (0, 1) (relative to Field.SIZE)
-        // - velocity cannnot be relative if acceleration is used
-        playerAnimator.SetFloat("velocity", 0f);
-        state = StateEnum.Idle;
-        OnMoved();
     }
 
     public void Show()
