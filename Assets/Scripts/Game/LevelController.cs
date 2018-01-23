@@ -11,7 +11,7 @@ namespace Dev.Krk.MemoryFlow.Game
     public class LevelController : MonoBehaviour
     {
         public UnityAction OnPlayerFailed;
-        public UnityAction OnPlayerMoved;
+        public UnityAction<Vector2> OnPlayerMoved;
 
         public UnityAction OnLevelStarted;
         public UnityAction OnLevelEnded;
@@ -118,22 +118,22 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public bool CanMoveLeft()
         {
-            return CanMove() && canMoveLeft(player);
+            return CanMove() && CanMoveLeft(player);
         }
 
         public bool CanMoveRight()
         {
-            return CanMove() && canMoveRight(player);
+            return CanMove() && CanMoveRight(player);
         }
 
         public bool CanMoveUp()
         {
-            return CanMove() && canMoveUp(player);
+            return CanMove() && CanMoveUp(player);
         }
 
         public bool CanMoveDown()
         {
-            return CanMove() && canMoveDown(player);
+            return CanMove() && CanMoveDown(player);
         }
 
         public bool CanMove()
@@ -141,25 +141,25 @@ namespace Dev.Krk.MemoryFlow.Game
             return state == StateEnum.Showing || state == StateEnum.Playing;
         }
 
-        private bool canMoveLeft(Player player)
+        private bool CanMoveLeft(Player player)
         {
             Vector2 position = getFieldPosition(playerActualPosition) + Vector2.left;
             return fieldMap.CanMoveLeft(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
-        private bool canMoveRight(Player player)
+        private bool CanMoveRight(Player player)
         {
             Vector2 position = getFieldPosition(playerActualPosition);
             return fieldMap.CanMoveRight(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
-        private bool canMoveUp(Player player)
+        private bool CanMoveUp(Player player)
         {
             Vector2 position = getFieldPosition(playerActualPosition);
             return fieldMap.CanMoveUp(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
-        private bool canMoveDown(Player player)
+        private bool CanMoveDown(Player player)
         {
             Vector2 position = getFieldPosition(playerActualPosition) + Vector2.down;
             return fieldMap.CanMoveDown(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
@@ -169,7 +169,7 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             if (CanMoveLeft())
             {
-                move(getLeftField(player), Vector2.left);
+                Move(getLeftField(player), Vector2.left);
             }
         }
 
@@ -177,7 +177,7 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             if (CanMoveRight())
             {
-                move(getRightField(player), Vector2.right);
+                Move(getRightField(player), Vector2.right);
             }
         }
 
@@ -185,7 +185,7 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             if (CanMoveUp())
             {
-                move(getUpField(player), Vector2.up);
+                Move(getUpField(player), Vector2.up);
             }
         }
 
@@ -193,11 +193,11 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             if (CanMoveDown())
             {
-                move(getDownField(player), Vector2.down);
+                Move(getDownField(player), Vector2.down);
             }
         }
 
-        private void move(Field field, Vector2 vector)
+        private void Move(Field field, Vector2 vector)
         {
             playerActualPosition += vector * Field.SIZE;
 
@@ -226,7 +226,7 @@ namespace Dev.Krk.MemoryFlow.Game
                 {
                     field.Unmask();
                     player.Move(vector * Field.SIZE);
-                    if (OnPlayerMoved != null) OnPlayerMoved();
+                    if (OnPlayerMoved != null) OnPlayerMoved(vector);
                     
                 }
                 else

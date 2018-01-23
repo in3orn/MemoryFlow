@@ -58,7 +58,7 @@ namespace Dev.Krk.MemoryFlow.Game
             StartLevel();
         }
 
-        private void ProcessPlayerMoved()
+        private void ProcessPlayerMoved(Vector2 vector)
         {
             tutorialController.Hide();
         }
