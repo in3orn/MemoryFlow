@@ -8,7 +8,7 @@ namespace Dev.Krk.MemoryFlow.Game.State
     public class ScoreController : ResourcesInitializer
     {
         public UnityAction OnScoreUpdated;
-        public UnityAction OnScoreTransfered;
+        public UnityAction OnScoreTransferred;
 
         private readonly string SCORE = "Score";
 
@@ -47,7 +47,6 @@ namespace Dev.Krk.MemoryFlow.Game.State
         public void TransferScore()
         {
             StartCoroutine(TransferScoreInternal());
-            if (OnScoreTransfered != null) OnScoreTransfered();
         }
 
         private IEnumerator TransferScoreInternal()
@@ -58,7 +57,7 @@ namespace Dev.Krk.MemoryFlow.Game.State
                 globalScore += dScore;
                 currentScore -= dScore;
 
-                if (OnScoreUpdated != null) OnScoreUpdated();
+                if (OnScoreTransferred != null) OnScoreTransferred();
 
                 yield return new WaitForSeconds(transferFrequency);
             }
@@ -66,7 +65,7 @@ namespace Dev.Krk.MemoryFlow.Game.State
             globalScore += currentScore;
             currentScore = 0;
 
-            if (OnScoreUpdated != null) OnScoreUpdated();
+            if (OnScoreTransferred != null) OnScoreTransferred();
         }
     }
 }

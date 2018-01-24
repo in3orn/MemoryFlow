@@ -23,6 +23,10 @@ namespace Dev.Krk.MemoryFlow.Sounds
         private int numOfSlides = 4;
         private int slideIndex;
 
+        [SerializeField]
+        private int numOfScoreUpdates = 3;
+        private int scoreUpdateIndex;
+
         private Vector2 prevVector;
 
         void Start()
@@ -38,7 +42,7 @@ namespace Dev.Krk.MemoryFlow.Sounds
             levelController.OnLevelCompleted += ProcessLevelCompleted;
             levelController.OnLevelFailed += ProcessLevelFailed;
 
-            scoreController.OnScoreTransfered += ProcessScoreTransferred;
+            scoreController.OnScoreTransferred += ProcessScoreTransferred;
         }
 
         void OnDisable()
@@ -54,7 +58,7 @@ namespace Dev.Krk.MemoryFlow.Sounds
 
             if(scoreController != null)
             {
-                scoreController.OnScoreTransfered -= ProcessScoreTransferred;
+                scoreController.OnScoreTransferred -= ProcessScoreTransferred;
             }
         }
 
@@ -102,7 +106,10 @@ namespace Dev.Krk.MemoryFlow.Sounds
 
         private void ProcessScoreTransferred()
         {
-            soundPlayer.PlaySound(SoundPlayer.SoundId.ScoreTransfer);
+            scoreUpdateIndex += Random.Range(0, numOfScoreUpdates - 1);
+            scoreUpdateIndex %= numOfScoreUpdates;
+
+            soundPlayer.PlaySound(SoundPlayer.SoundId.ScoreTransfer1 + scoreUpdateIndex);
         }
     }
 }

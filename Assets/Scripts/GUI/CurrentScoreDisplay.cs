@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Dev.Krk.MemoryFlow.Game.State;
+using System;
 
 namespace Dev.Krk.MemoryFlow.Game.GUI
 {
@@ -13,29 +14,52 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
         [SerializeField]
         private Text scoreLabel;
 
+        [SerializeField]
+        private Animator[] animators;
+
         void Start()
         {
-            UpdateScoreLabel();
         }
         
         void OnEnable()
         {
-            scoreController.OnScoreUpdated += UpdateScoreLabel;
+            scoreController.OnScoreUpdated += ProcessScoreUpdated;
+            scoreController.OnScoreTransferred += ProcessScoreTransferred;
         }
 
         void OnDisable()
         {
             if(scoreController != null)
             {
-                scoreController.OnScoreUpdated -= UpdateScoreLabel;
+                scoreController.OnScoreUpdated -= ProcessScoreUpdated;
             }
         }
 
-        private void UpdateScoreLabel()
+        private void ProcessScoreUpdated()
+        {
+            UpdateText();
+            AnimateScore("UpdateScore");
+        }
+
+        private void ProcessScoreTransferred()
+        {
+            UpdateText();
+            AnimateScore("TransferScore");
+        }
+
+        private void UpdateText()
         {
             NumberFormatInfo format = CultureInfo.InvariantCulture.NumberFormat.Clone() as NumberFormatInfo;
             format.NumberGroupSeparator = " ";
             scoreLabel.text = scoreController.CurrentScore.ToString("#,0", format);
+        }
+
+        private void AnimateScore(string trigger)
+        {
+            foreach (var animator in animators)
+            {
+                animator.SetTrigger(trigger);
+            }
         }
     }
 }

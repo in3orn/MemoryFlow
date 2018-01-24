@@ -19,7 +19,9 @@ namespace Dev.Krk.MemoryFlow.Sounds
             Failure,
             LevelComplete,
             LevelFailed,
-            ScoreTransfer
+            ScoreTransfer1,
+            ScoreTransfer2,
+            ScoreTransfer3
         }
 
         private AudioSource audioSource;

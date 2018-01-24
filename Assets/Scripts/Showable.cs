@@ -4,7 +4,6 @@ using System.Collections;
 [RequireComponent(typeof(SpriteRenderer))]
 public class Showable : MonoBehaviour
 {
-
     [SerializeField]
     private float showDuration = 0.5f;
 
@@ -16,6 +15,8 @@ public class Showable : MonoBehaviour
 
     [SerializeField]
     private float hideDelay = 0f;
+    
+    private Animator animator;
 
     private SpriteRenderer spriteRenderer;
 
@@ -35,19 +36,38 @@ public class Showable : MonoBehaviour
 
     void Awake()
     {
+        animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    private void Start()
+    {
     }
 
     public void Show()
     {
         hidden = false;
-        StartCoroutine(setOpacity(spriteRenderer.color.a, 1f, showDelay, showDuration));
+        if (animator != null)
+        {
+            animator.SetBool("shown", true);
+        }
+        else
+        {
+            StartCoroutine(setOpacity(spriteRenderer.color.a, 1f, showDelay, showDuration));
+        }
     }
 
     public void Hide()
     {
         hidden = true;
-        StartCoroutine(setOpacity(spriteRenderer.color.a, 0f, hideDelay, hideDuration));
+        if (animator != null)
+        {
+            animator.SetBool("shown", false);
+        }
+        else
+        {
+            StartCoroutine(setOpacity(spriteRenderer.color.a, 0f, hideDelay, hideDuration));
+        }
     }
 
     private IEnumerator setOpacity(float from, float to, float delay, float duration)
