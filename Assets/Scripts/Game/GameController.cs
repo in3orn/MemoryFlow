@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Events;
 using Dev.Krk.MemoryFlow.Game.State;
 
@@ -33,7 +34,7 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             levelController.OnLevelCompleted += ProcessLevelCompleted;
             levelController.OnLevelFailed += ProcessLevelFailed;
-            levelController.OnLevelEnded+= ProcessLevelEnded;
+            //levelController.OnLevelEnded+= ProcessLevelEnded;
 
             levelController.OnPlayerMoved += ProcessPlayerMoved;
             levelController.OnPlayerFailed += ProcessPlayerDied;
@@ -45,7 +46,7 @@ namespace Dev.Krk.MemoryFlow.Game
             {
                 levelController.OnLevelCompleted -= ProcessLevelCompleted;
                 levelController.OnLevelFailed -= ProcessLevelFailed;
-                levelController.OnLevelEnded -= ProcessLevelEnded;
+                //levelController.OnLevelEnded -= ProcessLevelEnded;
 
                 levelController.OnPlayerMoved -= ProcessPlayerMoved;
                 levelController.OnPlayerFailed -= ProcessPlayerDied;
@@ -67,6 +68,8 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             tutorialController.Deactivate();
             progressController.ResetFlow(scoreController.GlobalScore);
+
+            if (OnLevelFailed != null) OnLevelFailed();
         }
 
         private void ProcessLevelCompleted()
@@ -74,36 +77,32 @@ namespace Dev.Krk.MemoryFlow.Game
             tutorialController.Deactivate();
             scoreController.IncreaseScore();
             progressController.NextLevel();
-        }
 
-        private void ProcessLevelEnded()
-        {
-            if (levelController.State != LevelController.StateEnum.Failed)
+            if (progressController.IsFlowCompleted())
             {
-                if (progressController.IsFlowCompleted())
+                progressController.NextFlow();
+
+                if (progressController.IsGameCompleted())
                 {
-                    progressController.NextFlow();
+                    progressController.ResetFlow(scoreController.GlobalScore);
 
-                    if (progressController.IsGameCompleted())
-                    {
-                        progressController.ResetFlow(scoreController.GlobalScore);
-
-                        if (OnGameCompleted != null) OnGameCompleted();
-                    }
-                    else
-                    {
-                        if (OnFlowCompleted != null) OnFlowCompleted();
-                    }
+                    if (OnGameCompleted != null) OnGameCompleted();
                 }
                 else
                 {
-                    StartLevel();
+                    if (OnFlowCompleted != null) OnFlowCompleted();
                 }
             }
             else
             {
-                if (OnLevelFailed != null) OnLevelFailed();
+                StartCoroutine(StartLevelWithDelay());
             }
+        }
+
+        private IEnumerator StartLevelWithDelay()
+        {
+            yield return new WaitForSeconds(1.5f);
+            StartLevel();
         }
 
         public void ProcessPlayerDied()

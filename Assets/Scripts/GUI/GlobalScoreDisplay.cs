@@ -13,30 +13,47 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
         [SerializeField]
         private Text scoreLabel;
 
+        [SerializeField]
+        private Animator[] animators;
+
         void Start()
         {
         }
         
         void OnEnable()
         {
-            scoreController.OnScoreUpdated += UpdateScoreLabel;
-            scoreController.OnInitialized += UpdateScoreLabel;
+            scoreController.OnScoreTransferred += ProcessScoreTransferred;
+            scoreController.OnInitialized += UpdateText;
         }
 
         void OnDisable()
         {
             if(scoreController != null)
             {
-                scoreController.OnScoreUpdated -= UpdateScoreLabel;
-                scoreController.OnInitialized -= UpdateScoreLabel;
+                scoreController.OnScoreTransferred -= ProcessScoreTransferred;
+                scoreController.OnInitialized -= UpdateText;
             }
         }
 
-        private void UpdateScoreLabel()
+        private void ProcessScoreTransferred()
+        {
+            UpdateText();
+            AnimateScore("TransferScore");
+        }
+
+        private void UpdateText()
         {
             NumberFormatInfo format = CultureInfo.InvariantCulture.NumberFormat.Clone() as NumberFormatInfo;
             format.NumberGroupSeparator = " ";
-            scoreLabel.text = scoreController.GlobalScore.ToString("#,0", format);
+            scoreLabel.text = scoreController.CurrentScore.ToString("#,0", format);
+        }
+
+        private void AnimateScore(string trigger)
+        {
+            foreach (var animator in animators)
+            {
+                animator.SetTrigger(trigger);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using Dev.Krk.MemoryFlow.Game;
 using Dev.Krk.MemoryFlow.Game.State;
 using Dev.Krk.MemoryFlow.Summary;
@@ -8,6 +9,12 @@ namespace Dev.Krk.MemoryFlow.State
 {
     public class GameStateController : MonoBehaviour
     {
+        private delegate void StateChangeAction();
+
+        [Header("Settings")]
+        [SerializeField]
+        private float delay;
+
         [Header("Sections")]
         [SerializeField]
         private GameController game;
@@ -62,22 +69,22 @@ namespace Dev.Krk.MemoryFlow.State
 
         public void PlayGame()
         {
-            game.StartNewRun();
+            StartCoroutine(ChangeState(game.StartNewRun));
         }
 
         public void ShowSummary()
         {
-            summary.Show();
+            StartCoroutine(ChangeState(summary.Show));
         }
 
         public void ShowShop()
         {
-            shop.Show();
+            StartCoroutine(ChangeState(shop.Show));
         }
 
         public void ShowSettings()
         {
-            settings.Show();
+            StartCoroutine(ChangeState(settings.Show));
         }
 
         private void ProcessGameCompleted()
@@ -108,6 +115,12 @@ namespace Dev.Krk.MemoryFlow.State
             {
                 PlayGame();
             }
+        }
+
+        private IEnumerator ChangeState(StateChangeAction action)
+        {
+            if (delay > 0f) yield return new WaitForSeconds(delay);
+            action();
         }
     }
 }
