@@ -45,7 +45,7 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
         {
             NumberFormatInfo format = CultureInfo.InvariantCulture.NumberFormat.Clone() as NumberFormatInfo;
             format.NumberGroupSeparator = " ";
-            scoreLabel.text = scoreController.CurrentScore.ToString("#,0", format);
+            scoreLabel.text = scoreController.GlobalScore.ToString("#,0", format);
         }
 
         private void AnimateScore(string trigger)
