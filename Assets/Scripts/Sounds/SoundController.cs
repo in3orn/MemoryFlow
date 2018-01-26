@@ -29,6 +29,11 @@ namespace Dev.Krk.MemoryFlow.Sounds
 
         private Vector2 prevVector;
 
+        private float prevMoveTime;
+
+        [SerializeField]
+        private float firstMoveDelay;
+
         void Start()
         {
 
@@ -75,7 +80,7 @@ namespace Dev.Krk.MemoryFlow.Sounds
             slideIndex += Random.Range(0, numOfSlides - 1);
             slideIndex %= numOfSlides;
 
-            if(IsDirectionChanged(vector))
+            if(IsDirectionChanged(vector) || IsFirstMove())
             {
                 soundPlayer.PlaySound(SoundPlayer.SoundId.Slide1 + slideIndex);
             }
@@ -86,6 +91,14 @@ namespace Dev.Krk.MemoryFlow.Sounds
         private bool IsDirectionChanged(Vector2 vector)
         {
             return (vector - prevVector).magnitude > 0.5f;
+        }
+
+        private bool IsFirstMove()
+        {
+            float moveTime = Time.time;
+            bool result = (moveTime - prevMoveTime) > firstMoveDelay;
+            prevMoveTime = moveTime;
+            return result;
         }
 
         private void ProcessPlayerFailed()
