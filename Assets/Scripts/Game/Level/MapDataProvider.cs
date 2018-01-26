@@ -16,7 +16,32 @@ namespace Dev.Krk.MemoryFlow.Game.Level
         {
             FlowData flowData = flowsInitializer.Data.Flows[flow];
             LevelData levelData = flowData.Levels[level];
-            return mapDataFactory.Create(levelData);
+
+            FieldMapData data = mapDataFactory.Create(levelData);
+
+            float r = Random.value;
+
+            if (data.HorizontalFields.GetLength(0) == data.VerticalFields.GetLength(1))
+            {
+                if (r < 0.25f)
+                {
+                    data.ReflectByDiagonal();
+                }
+                else if (r < 0.5f)
+                {
+                    data.ReflectByContrdiagonal();
+                }
+                else if (r < 0.75f)
+                {
+                    //TODO data.ReflectByCenter();
+                }
+            }
+            else if (r < 0.5f)
+            {
+                //TODO data.ReflectByCenter();
+            }
+            
+            return data;
         }
     }
 

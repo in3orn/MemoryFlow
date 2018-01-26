@@ -15,6 +15,8 @@ public class JsonFieldMapDataFactory : MonoBehaviour
         int index = Random.Range(0, maps.Count);
         MapData mapData = maps[index];
 
+        Debug.Log("Map data:" + index + " / " + maps.Count);
+
         int[,] horizontalFields = RowsToArray(mapData.HorizontalFields);
         int[,] verticalFields = RowsToArray(mapData.VerticalFields);
 

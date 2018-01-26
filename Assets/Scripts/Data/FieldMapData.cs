@@ -59,6 +59,15 @@
                         horizontalFields[i, j] = horizontalFields[si - i - 1, sj - j - 1];
                         horizontalFields[si - i - 1, sj - j - 1] = temp;
                     }
+                }
+            }
+
+            si = verticalFields.GetLength(0);
+            sj = verticalFields.GetLength(1);
+            for (int i = 0; i < si; i++)
+            {
+                for (int j = 0; j < sj; j++)
+                {
                     if (j < sj / 2 || (j == sj - j - 1 && i < si / 2))
                     {
                         int temp = verticalFields[j, i];

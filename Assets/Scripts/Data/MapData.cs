@@ -11,6 +11,9 @@ namespace Dev.Krk.MemoryFlow.Data
         public RowData[] HorizontalFields;
         public RowData[] VerticalFields;
 
+        [NonSerialized]
+        public float RandomRank;
+
         public object Clone()
         {
             return new MapData
