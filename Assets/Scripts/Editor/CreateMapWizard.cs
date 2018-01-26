@@ -13,7 +13,7 @@ namespace Dev.Krk.MemoryFlow.Editor
 
         public int BucketSize = 1000;
 
-        public float[] LengthToTurnsRatioBuckets = { 1.25f, 1.5f, 1.75f, 2.0f };
+        public float[] LengthToTurnsRatioBuckets = { 1.5f, 2.0f, 2.25f, 2.5f };
 
         public Vector2[] MapSizes = { Vector2.one, Vector2.one * 2, Vector2.one * 3, new Vector2(3, 4), Vector2.one * 4, new Vector2(4, 5), Vector2.one * 5, new Vector2(5, 6), Vector2.one * 6 };
 
@@ -42,36 +42,45 @@ namespace Dev.Krk.MemoryFlow.Editor
 
         void OnWizardCreate()
         {
+            CreateMaps();
+        }
+
+        private void CreateMaps()
+        {
+            List<MapData> result = new List<MapData>();
+
+            PathFinder pathFinder = new PathFinder();
+            SinglePathFinder singlePathFinder = new SinglePathFinder();
+            BucketPathFinder bucketPathFinder = new BucketPathFinder(pathFinder, singlePathFinder);
+
+            bucketPathFinder.LengthToTurnsRatioBuckets = LengthToTurnsRatioBuckets;
+            bucketPathFinder.BucketSize = BucketSize;
+
+            int prevCount = 0;
+            
+            foreach (Vector2 mapSize in MapSizes)
+            {
+                Debug.Log("Start process for maps: " + (int)mapSize.x + "x" + (int)mapSize.y);
+                result.AddRange(bucketPathFinder.FindPaths((int)mapSize.x, (int)mapSize.y));
+                Debug.Log("Maps created: " + (result.Count - prevCount));
+                prevCount = result.Count;
+
+                SaveData(result);
+            }
+
+            bucketPathFinder.Clear();
+        }
+
+        private void SaveData(List<MapData> maps)
+        {
             MapsData mapsData = new MapsData
             {
-                Maps = CreateMaps()
+                Maps = maps.ToArray()
             };
 
             string path = Path.Combine(Application.streamingAssetsPath, OutputFile);
             string json = JsonUtility.ToJson(mapsData);
             File.WriteAllText(path, json);
-
-            Debug.Log("Created maps: " + mapsData.Maps.Length + " - saved in file: " + OutputFile);
-        }
-
-        private MapData[] CreateMaps()
-        {
-            List<MapData> result = new List<MapData>();
-            PathFinder pathFinder = new PathFinder();
-            pathFinder.LengthToTurnsRatioBuckets = LengthToTurnsRatioBuckets;
-            pathFinder.BucketSize = BucketSize;
-
-            int prevCount = 0;
-
-            foreach (Vector2 mapSize in MapSizes)
-            {
-                Debug.Log("Start process for maps: " + (int)mapSize.x + "x" + (int)mapSize.y);
-                result.AddRange(pathFinder.FindPaths((int)mapSize.x, (int)mapSize.y));
-                Debug.Log("Maps created: " + (result.Count - prevCount));
-                prevCount = result.Count;
-            }
-
-            return result.ToArray();
         }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using Dev.Krk.MemoryFlow.Data;
 
 namespace Dev.Krk.MemoryFlow.Game.Level
 {
-    public class PathFinder
+    public class SinglePathFinder
     {
         private enum Direction
         {
@@ -15,51 +14,12 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             Down
         }
 
-        public float[] LengthToTurnsRatioBuckets;
-
-        public int BucketSize;
-
         private Direction[] directions = { Direction.Left, Direction.Right, Direction.Up, Direction.Down };
 
-        List<List<MapData>> buckets = new List<List<MapData>>();
-
-        public List<MapData> FindPaths(int width, int height)
+        public MapData FindPath(int width, int height)
         {
-            InitBuckets();
-
             MapData data = CreateData(width, height);
-            FindPaths(data, 0, 0, Direction.None);
-
-            List<MapData> result = new List<MapData>();
-            foreach (var bucket in buckets)
-            {
-                result.AddRange(bucket);
-            }
-            return result;
-        }
-
-        public void Clear()
-        {
-            ClearBuckets();
-        }
-
-        private void InitBuckets()
-        {
-            ClearBuckets();
-
-            for (int i = 0; i < LengthToTurnsRatioBuckets.Length; i++)
-            {
-                buckets.Add(new List<MapData>());
-            }
-        }
-
-        private void ClearBuckets()
-        {
-            foreach (var bucket in buckets)
-            {
-                bucket.Clear();
-            }
-            buckets.Clear();
+            return FindPath(data, 0, 0, Direction.None);
         }
 
         private MapData CreateData(int width, int height)
@@ -98,35 +58,11 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             return fields;
         }
 
-        private void FindPaths(MapData data, int posX, int posY, Direction prevDirection)
+        private MapData FindPath(MapData data, int posX, int posY, Direction prevDirection)
         {
             if (IsPathCompleted(data, posX, posY))
             {
-                float ratio = data.PathLength / data.NumOfTurns;
-                for (int i = 0; i < LengthToTurnsRatioBuckets.Length; i++)
-                {
-                    float bucketRatio = LengthToTurnsRatioBuckets[i];
-                    if (ratio <= bucketRatio)
-                    {
-                        data.RandomRank = Random.value;
-
-                        var bucket = buckets[i];
-                        if (bucket.Count < BucketSize)
-                        {
-                            buckets[i].Add(data);
-                        }
-                        else
-                        {
-                            int index = Random.Range(0, bucket.Count);
-                            if (bucket[index].RandomRank < data.RandomRank)
-                            {
-                                bucket[index] = data;
-                            }
-                        }
-
-                        break;
-                    }
-                }
+                return data;
             }
             else
             {
@@ -135,7 +71,8 @@ namespace Dev.Krk.MemoryFlow.Game.Level
                 {
                     if (CanMoveRight(data, posX, posY))
                     {
-                        MoveRight(data, posX, posY, prevDirection);
+                        MapData result = MoveRight(data, posX, posY, prevDirection);
+                        if (result != null) return result;
                     }
                 }
                 else
@@ -148,30 +85,35 @@ namespace Dev.Krk.MemoryFlow.Game.Level
                             case Direction.Up:
                                 if (CanMoveUp(data, posX, posY))
                                 {
-                                    MoveUp(data, posX, posY, prevDirection);
+                                    MapData result = MoveUp(data, posX, posY, prevDirection);
+                                    if (result != null) return result;
                                 }
                                 break;
                             case Direction.Down:
                                 if (CanMoveDown(data, posX, posY))
                                 {
-                                    MoveDown(data, posX, posY, prevDirection);
+                                    MapData result = MoveDown(data, posX, posY, prevDirection);
+                                    if (result != null) return result;
                                 }
                                 break;
                             case Direction.Left:
                                 if (CanMoveLeft(data, posX, posY))
                                 {
-                                    MoveLeft(data, posX, posY, prevDirection);
+                                    MapData result = MoveLeft(data, posX, posY, prevDirection);
+                                    if (result != null) return result;
                                 }
                                 break;
                             case Direction.Right:
                                 if (CanMoveRight(data, posX, posY))
                                 {
-                                    MoveRight(data, posX, posY, prevDirection);
+                                    MapData result = MoveRight(data, posX, posY, prevDirection);
+                                    if (result != null) return result;
                                 }
                                 break;
                         }
                     }
                 }
+                return null;
             }
         }
 
@@ -224,32 +166,32 @@ namespace Dev.Krk.MemoryFlow.Game.Level
             return true;
         }
 
-        private void MoveUp(MapData data, int posX, int posY, Direction prevDirection)
+        private MapData MoveUp(MapData data, int posX, int posY, Direction prevDirection)
         {
             MapData newData = CreateNewData(data, prevDirection, Direction.Up);
             newData.VerticalFields[posY - 1].Fields[posX] = 1;
-            FindPaths(newData, posX, posY - 1, Direction.Up);
+            return FindPath(newData, posX, posY - 1, Direction.Up);
         }
 
-        private void MoveDown(MapData data, int posX, int posY, Direction prevDirection)
+        private MapData MoveDown(MapData data, int posX, int posY, Direction prevDirection)
         {
             MapData newData = CreateNewData(data, prevDirection, Direction.Down);
             newData.VerticalFields[posY].Fields[posX] = 1;
-            FindPaths(newData, posX, posY + 1, Direction.Down);
+            return FindPath(newData, posX, posY + 1, Direction.Down);
         }
 
-        private void MoveLeft(MapData data, int posX, int posY, Direction prevDirection)
+        private MapData MoveLeft(MapData data, int posX, int posY, Direction prevDirection)
         {
             MapData newData = CreateNewData(data, prevDirection, Direction.Left);
             newData.HorizontalFields[posY].Fields[posX - 1] = 1;
-            FindPaths(newData, posX - 1, posY, Direction.Left);
+            return FindPath(newData, posX - 1, posY, Direction.Left);
         }
 
-        private void MoveRight(MapData data, int posX, int posY, Direction prevDirection)
+        private MapData MoveRight(MapData data, int posX, int posY, Direction prevDirection)
         {
             MapData newData = CreateNewData(data, prevDirection, Direction.Right);
             newData.HorizontalFields[posY].Fields[posX] = 1;
-            FindPaths(newData, posX + 1, posY, Direction.Right);
+            return FindPath(newData, posX + 1, posY, Direction.Right);
         }
 
         private MapData CreateNewData(MapData data, Direction prevDirection, Direction direction)
