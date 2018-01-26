@@ -43,8 +43,7 @@
                 }
             }
         }
-
-        //TODO little weak - full edges are not misleading - but great in case of achievement - visit all edges
+        
         public void ReflectByCenter()
         {
             int si = horizontalFields.GetLength(0);
@@ -70,9 +69,9 @@
                 {
                     if (j < sj / 2 || (j == sj - j - 1 && i < si / 2))
                     {
-                        int temp = verticalFields[j, i];
-                        verticalFields[j, i] = verticalFields[sj - j - 1, si - i - 1];
-                        verticalFields[sj - j - 1, si - i - 1] = temp;
+                        int temp = verticalFields[i, j];
+                        verticalFields[i, j] = verticalFields[si - i - 1, sj - j - 1];
+                        verticalFields[si - i - 1, sj - j - 1] = temp;
                     }
                 }
             }

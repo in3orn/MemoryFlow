@@ -33,12 +33,12 @@ namespace Dev.Krk.MemoryFlow.Game.Level
                 }
                 else if (r < 0.75f)
                 {
-                    //TODO data.ReflectByCenter();
+                    data.ReflectByCenter();
                 }
             }
             else if (r < 0.5f)
             {
-                //TODO data.ReflectByCenter();
+                data.ReflectByCenter();
             }
             
             return data;
