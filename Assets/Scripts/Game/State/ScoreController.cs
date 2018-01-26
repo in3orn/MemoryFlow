@@ -26,14 +26,20 @@ namespace Dev.Krk.MemoryFlow.Game.State
 
         public int CurrentScore { get { return currentScore; } }
 
-        void OnDisable()
+        void OnApplicationPause(bool pauseStatus)
         {
-            PlayerPrefs.SetInt(SCORE, globalScore);
+            if (pauseStatus)
+                SaveData();
+        }
+
+        void OnApplicationQuit()
+        {
+            SaveData();
         }
 
         public override void Init()
         {
-            globalScore = PlayerPrefs.GetInt(SCORE);
+            LoadData();
             initialized = true;
             if (OnInitialized != null) OnInitialized();
         }
@@ -66,6 +72,16 @@ namespace Dev.Krk.MemoryFlow.Game.State
             currentScore = 0;
 
             if (OnScoreTransferred != null) OnScoreTransferred();
+        }
+
+        private void SaveData()
+        {
+            PlayerPrefs.SetInt(SCORE, globalScore);
+        }
+
+        private void LoadData()
+        {
+            globalScore = PlayerPrefs.GetInt(SCORE);
         }
     }
 }

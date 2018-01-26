@@ -20,12 +20,6 @@
 					"Width": 2,
 					"Height": 2,
 					"MinDifficulty": 0.5,
-					"MaxDifficulty": 0.75
-				},
-				{
-					"Width": 2,
-					"Height": 2,
-					"MinDifficulty": 0.75,
 					"MaxDifficulty": 1
 				},
 				{
@@ -42,24 +36,24 @@
 				},
 				{
 					"Width": 3,
-					"Height": 3,
-					"MinDifficulty": 0.5,
-					"MaxDifficulty": 0.75
-				},
-				{
-					"Width": 3,
-					"Height": 3,
-					"MinDifficulty": 0.75,
-					"MaxDifficulty": 1
+					"Height": 4,
+					"MinDifficulty": 0.25,
+					"MaxDifficulty": 0.5
 				},
 				{
 					"Width": 3,
 					"Height": 4,
-					"MinDifficulty": 0,
-					"MaxDifficulty": 0.25
+					"MinDifficulty": 0.5,
+					"MaxDifficulty": 0.75
 				},
 				{
-					"Width": 3,
+					"Width": 4,
+					"Height": 4,
+					"MinDifficulty": 0.25,
+					"MaxDifficulty": 0.5
+				},
+				{
+					"Width": 4,
 					"Height": 4,
 					"MinDifficulty": 0.25,
 					"MaxDifficulty": 0.5

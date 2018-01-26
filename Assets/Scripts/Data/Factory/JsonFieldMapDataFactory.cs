@@ -29,11 +29,11 @@ public class JsonFieldMapDataFactory : MonoBehaviour
 
         Vector2 minMaxDifficulty = CalculateMinMaxDifficulty(levelData.Width, levelData.Height);
 
-        foreach(MapData mapData in mapsDataInitializer.Data.Maps)
+        foreach (MapData mapData in mapsDataInitializer.Data.Maps)
         {
-            if(IsMatchingSize(mapData, levelData.Width, levelData.Height))
+            if (IsMatchingSize(mapData, levelData.Width, levelData.Height))
             {
-                if(minMaxDifficulty.y > minMaxDifficulty.x)
+                if (minMaxDifficulty.y > minMaxDifficulty.x)
                 {
                     float difficulty = CalculateDifficulty(mapData);
                     float normalizedDifficulty = (difficulty - minMaxDifficulty.x) / (minMaxDifficulty.y - minMaxDifficulty.x);
@@ -46,7 +46,7 @@ public class JsonFieldMapDataFactory : MonoBehaviour
                 {
                     result.Add(mapData);
                 }
-                
+
             }
         }
 
@@ -64,7 +64,7 @@ public class JsonFieldMapDataFactory : MonoBehaviour
                 float difficulty = CalculateDifficulty(mapData);
                 if (difficulty < min)
                     min = difficulty;
-                else if (difficulty > max)
+                if (difficulty > max)
                     max = difficulty;
             }
         }
@@ -78,7 +78,7 @@ public class JsonFieldMapDataFactory : MonoBehaviour
 
     private float CalculateDifficulty(MapData mapData)
     {
-        return mapData.PathLength + 4 * mapData.NumOfTurns;
+        return mapData.NumOfTurns / (float)mapData.PathLength;
     }
 
     private int[,] RowsToArray(RowData[] rows)

@@ -19,8 +19,6 @@ namespace Dev.Krk.MemoryFlow.Game.Level
 
         public int BucketSize;
 
-        private Direction[] directions = { Direction.Left, Direction.Right, Direction.Up, Direction.Down };
-
         List<List<MapData>> buckets = new List<List<MapData>>();
 
         public List<MapData> FindPaths(int width, int height)
@@ -102,7 +100,7 @@ namespace Dev.Krk.MemoryFlow.Game.Level
         {
             if (IsPathCompleted(data, posX, posY))
             {
-                float ratio = data.PathLength / data.NumOfTurns;
+                float ratio = data.PathLength / (float) data.NumOfTurns;
                 for (int i = 0; i < LengthToTurnsRatioBuckets.Length; i++)
                 {
                     float bucketRatio = LengthToTurnsRatioBuckets[i];
@@ -113,7 +111,7 @@ namespace Dev.Krk.MemoryFlow.Game.Level
                         var bucket = buckets[i];
                         if (bucket.Count < BucketSize)
                         {
-                            buckets[i].Add(data);
+                            bucket.Add(data);
                         }
                         else
                         {
@@ -140,6 +138,7 @@ namespace Dev.Krk.MemoryFlow.Game.Level
                 }
                 else
                 {
+                    Direction[] directions = { Direction.Left, Direction.Right, Direction.Up, Direction.Down };
                     Shuffle(directions);
                     foreach (var direction in directions)
                     {
