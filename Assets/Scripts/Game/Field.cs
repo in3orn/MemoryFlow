@@ -20,10 +20,10 @@ public class Field : MonoBehaviour
 	private float setColorDuration = 0.5f;
 
 	[SerializeField]
-	private Color defaultColor;
+	public Color DefaultColor;
 
 	[SerializeField]
-	private Color validColor;
+	public Color ValidColor;
 
 	[SerializeField]
 	private Vector2 fallPosition = Vector2.down * 20f;
@@ -49,11 +49,11 @@ public class Field : MonoBehaviour
 
 	public bool Broken { get { return broken; } }
 
-	public void Init(Vector2 position, bool valid)
+    public void Init(Vector2 position, bool valid)
     {
 		transform.position = position;
 		this.valid = valid;
-		spriteRenderer.color = getInitColor();
+		spriteRenderer.color = GetInitColor();
 		broken = false;
 	}
 
@@ -66,7 +66,7 @@ public class Field : MonoBehaviour
 	public void Break()
 	{
 		broken = true;
-		StartCoroutine(fall());
+		StartCoroutine(Fall());
 	}
 
     public void Show()
@@ -81,15 +81,15 @@ public class Field : MonoBehaviour
 
 	public void Mask()
 	{
-		StartCoroutine (setColor (spriteRenderer.color, defaultColor, setColorDelay, setColorDuration));
+		StartCoroutine (SetColor (spriteRenderer.color, DefaultColor, setColorDelay, setColorDuration));
 	}
 
 	public void Unmask()
 	{
-		StartCoroutine (setColor (spriteRenderer.color, validColor, setColorDelay, setColorDuration));
+		StartCoroutine (SetColor (spriteRenderer.color, ValidColor, setColorDelay, setColorDuration));
 	}
 
-	private IEnumerator setColor(Color from, Color to, float delay, float duration)
+	private IEnumerator SetColor(Color from, Color to, float delay, float duration)
 	{
 		if (delay > 0f)
 		{
@@ -107,7 +107,7 @@ public class Field : MonoBehaviour
 		}
 	}
 
-	private IEnumerator fall()
+	private IEnumerator Fall()
 	{
 		Vector2 from = transform.position;
 		Vector2 to = from + fallPosition;
@@ -124,11 +124,9 @@ public class Field : MonoBehaviour
 		}
 	}
 
-	private Color getInitColor()
+	private Color GetInitColor()
 	{
-		Color color = valid ? validColor : defaultColor;
-		color.a = 0;
-
-		return color;
+		Color color = valid ? ValidColor : DefaultColor;
+        return new Color(color.r, color.g, color.b, 0f);
 	}
 }

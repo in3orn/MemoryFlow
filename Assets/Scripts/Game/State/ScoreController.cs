@@ -2,14 +2,17 @@
 using UnityEngine;
 using UnityEngine.Events;
 using Dev.Krk.MemoryFlow.Resources;
+using System;
 
 namespace Dev.Krk.MemoryFlow.Game.State
 {
     public class ScoreController : ResourcesInitializer
     {
+        public UnityAction OnLevelUpdated;
         public UnityAction OnScoreUpdated;
         public UnityAction OnScoreTransferred;
 
+        private readonly string LEVEL = "Level";
         private readonly string SCORE = "Score";
 
         [SerializeField]
@@ -18,13 +21,23 @@ namespace Dev.Krk.MemoryFlow.Game.State
         [SerializeField]
         private float transferFrequency;
 
-        private int globalScore;
+        private int level;
+
+        private int levelScore;
 
         private int currentScore;
 
-        public int GlobalScore { get { return globalScore; } }
+        private int maxLevelScore;
+
+
+        public int Level { get { return level; } }
+
+        public int LevelScore { get { return levelScore; } }
 
         public int CurrentScore { get { return currentScore; } }
+
+        public int MaxLevelScore { get { return maxLevelScore; } }
+
 
         void OnApplicationPause(bool pauseStatus)
         {
@@ -60,28 +73,55 @@ namespace Dev.Krk.MemoryFlow.Game.State
             int dScore = currentScore > transferIterations ? currentScore / transferIterations : 1;
             while (currentScore > dScore)
             {
-                globalScore += dScore;
+                levelScore += dScore;
                 currentScore -= dScore;
+
+                UpdateLevel();
 
                 if (OnScoreTransferred != null) OnScoreTransferred();
 
                 yield return new WaitForSeconds(transferFrequency);
             }
 
-            globalScore += currentScore;
+            levelScore += currentScore;
             currentScore = 0;
+
+            UpdateLevel();
 
             if (OnScoreTransferred != null) OnScoreTransferred();
         }
 
+        private void UpdateLevel()
+        {
+            if (levelScore >= maxLevelScore)
+            {
+                levelScore -= maxLevelScore;
+                level++;
+                UpdateMaxLevelScore();
+
+                if (OnLevelUpdated != null) OnLevelUpdated();
+            }
+        }
+
         private void SaveData()
         {
-            PlayerPrefs.SetInt(SCORE, globalScore);
+            PlayerPrefs.SetInt(LEVEL, level);
+            PlayerPrefs.SetInt(SCORE, levelScore);
         }
 
         private void LoadData()
         {
-            globalScore = PlayerPrefs.GetInt(SCORE);
+            level = PlayerPrefs.GetInt(LEVEL);
+            levelScore = PlayerPrefs.GetInt(SCORE);
+
+            if (level < 1) level = 1;
+
+            UpdateMaxLevelScore();
+        }
+
+        private void UpdateMaxLevelScore()
+        {
+            maxLevelScore = level * 10; //TODO some more sophisticated function :P
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using Dev.Krk.MemoryFlow.Game;
 using Dev.Krk.MemoryFlow.Game.State;
 using Dev.Krk.MemoryFlow.Summary;
@@ -9,6 +10,15 @@ namespace Dev.Krk.MemoryFlow.State
 {
     public class GameStateController : MonoBehaviour
     {
+        public enum StateEnum
+        {
+            Gameplay = 0,
+            Summary,
+            Settings
+        }
+
+        public UnityAction<StateEnum> OnStateChanged;
+
         private delegate void StateChangeAction();
 
         [Header("Settings")]
@@ -38,25 +48,24 @@ namespace Dev.Krk.MemoryFlow.State
         [SerializeField]
         private ProgressController progressController;
 
+
         void OnEnable()
         {
             initializer.OnInitialized += ProcessResourcesInitialized;
 
-            game.OnGameCompleted += ProcessGameCompleted;
             game.OnFlowCompleted += ProcessFlowCompleted;
             game.OnLevelFailed += ProcessLevelFailed;
         }
 
         void OnDisable()
         {
-            if(initializer != null)
+            if (initializer != null)
             {
                 initializer.OnInitialized -= ProcessResourcesInitialized;
             }
 
             if (game != null)
             {
-                game.OnGameCompleted -= ProcessGameCompleted;
                 game.OnFlowCompleted -= ProcessFlowCompleted;
                 game.OnLevelFailed -= ProcessLevelFailed;
             }
@@ -70,32 +79,29 @@ namespace Dev.Krk.MemoryFlow.State
         public void PlayGame()
         {
             StartCoroutine(ChangeState(game.StartNewRun));
+            if (OnStateChanged != null) OnStateChanged(StateEnum.Gameplay);
         }
 
         public void ShowSummary()
         {
             StartCoroutine(ChangeState(summary.Show));
+            if (OnStateChanged != null) OnStateChanged(StateEnum.Summary);
         }
 
         public void ShowShop()
         {
-            StartCoroutine(ChangeState(shop.Show));
+            if (OnStateChanged != null) OnStateChanged(StateEnum.Settings);
         }
 
         public void ShowSettings()
         {
             StartCoroutine(ChangeState(settings.Show));
-        }
-
-        private void ProcessGameCompleted()
-        {
-            //TODO add some congrats dialog or some reward
-            //TODO remove bonus
-            ShowSummary();
+            if (OnStateChanged != null) OnStateChanged(StateEnum.Settings);
         }
 
         private void ProcessFlowCompleted()
         {
+            //TODO some congratulations
             ShowSummary();
         }
 
@@ -106,9 +112,9 @@ namespace Dev.Krk.MemoryFlow.State
 
         private void ProcessResourcesInitialized()
         {
-            if(scoreController.GlobalScore > 0)
+            if (scoreController.LevelScore > 0)
             {
-                progressController.ResetFlow(scoreController.GlobalScore);
+                progressController.NextFlow(scoreController.LevelScore);
                 ShowSummary();
             }
             else

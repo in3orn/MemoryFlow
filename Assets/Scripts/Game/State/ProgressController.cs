@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Dev.Krk.MemoryFlow.Data.Initializers;
+using Dev.Krk.MemoryFlow.Data;
 
 namespace Dev.Krk.MemoryFlow.Game.State
 {
@@ -8,47 +9,67 @@ namespace Dev.Krk.MemoryFlow.Game.State
         [SerializeField]
         private FlowsDataInitializer flowsDataController;
 
-        private int flow;
-
         private int level;
 
-        public int Flow { get { return flow; } }
+        private int map;
 
         public int Level { get { return level; } }
+
+        public int Map { get { return map; } }
 
         void Start()
         {
         }
 
-        public bool IsFlowCompleted()
+        public bool IsLevelCompleted()
         {
-            return level == flowsDataController.Data.Flows[flow].Levels.Length;
+            return map == flowsDataController.Data.Flows[level].Levels.Length;
         }
 
-        public bool IsGameCompleted()
+        public bool IsFlowCompleted()
         {
-            return flow == flowsDataController.Data.Flows.Length;
+            return level == flowsDataController.Data.Flows.Length ||
+                flowsDataController.Data.Flows[level].ScoreLock != flowsDataController.Data.Flows[level + 1].ScoreLock;
+        }
+
+        public void NextMap()
+        {
+            map++;
         }
 
         public void NextLevel()
         {
+            map = 0;
             level++;
         }
 
-        public void NextFlow()
+        public void NextFlow(int score)
         {
-            level = 0;
-            flow++;
+            map = 0;
+
+            if (level == flowsDataController.Data.Flows.Length || score < flowsDataController.Data.Flows[level+1].ScoreLock)
+            {
+                ResetFlow();
+            }
+            else
+            {
+                level++;
+            }
         }
 
-        public void ResetFlow(int score)
+        public void ResetFlow()
         {
-            level = 0;
+            map = 0;
 
-            for (flow = 0; flow < flowsDataController.Data.Flows.Length; flow++)
+            if (level == flowsDataController.Data.Flows.Length)
+                level--;
+
+            while(level > 0)
             {
-                if (flowsDataController.Data.Flows[flow].ScoreLock < 0) break;
-                if (flowsDataController.Data.Flows[flow].ScoreLock > score) break;
+                if (flowsDataController.Data.Flows[level].ScoreLock != flowsDataController.Data.Flows[level - 1].ScoreLock)
+                    break;
+
+                level--;
             }
         }
     }

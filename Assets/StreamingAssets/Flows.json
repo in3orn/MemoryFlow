@@ -2,7 +2,7 @@
 	"Flows": 
 	[
 		{
-			"ScoreLock": 0,
+			"ScoreLock": -1,
 			"Levels": [
 				{
 					"Width": 1,
@@ -61,7 +61,7 @@
 			]
 		},
 		{
-			"ScoreLock": -1,
+			"ScoreLock": 0,
 			"Levels": [
 				{
 					"Width": 3,
@@ -108,7 +108,7 @@
 			]
 		},
 		{
-			"ScoreLock": -1,
+			"ScoreLock": 10,
 			"Levels": [
 				{
 					"Width": 3,
@@ -155,7 +155,7 @@
 			]
 		},
 		{
-			"ScoreLock": -1,
+			"ScoreLock": 25,
 			"Levels": [
 				{
 					"Width": 3,

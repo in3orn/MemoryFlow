@@ -5,7 +5,7 @@ using Dev.Krk.MemoryFlow.Game.State;
 
 namespace Dev.Krk.MemoryFlow.Game.GUI
 {
-    public class GlobalScoreDisplay : MonoBehaviour
+    public class LevelScoreDisplay : MonoBehaviour
     {
         [SerializeField]
         private ScoreController scoreController;
@@ -45,7 +45,7 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
         {
             NumberFormatInfo format = CultureInfo.InvariantCulture.NumberFormat.Clone() as NumberFormatInfo;
             format.NumberGroupSeparator = " ";
-            scoreLabel.text = scoreController.GlobalScore.ToString("#,0", format);
+            scoreLabel.text = scoreController.LevelScore.ToString("#,0", format) + "/" + scoreController.MaxLevelScore.ToString("#,0", format);
         }
 
         private void AnimateScore(string trigger)

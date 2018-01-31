@@ -8,7 +8,6 @@ namespace Dev.Krk.MemoryFlow.Game
     public class GameController : MonoBehaviour
     {
         public UnityAction OnFlowCompleted;
-        public UnityAction OnGameCompleted;
         public UnityAction OnLevelFailed;
 
         [SerializeField]
@@ -67,7 +66,7 @@ namespace Dev.Krk.MemoryFlow.Game
         public void ProcessLevelFailed()
         {
             tutorialController.Deactivate();
-            progressController.ResetFlow(scoreController.GlobalScore);
+            progressController.ResetFlow();
 
             if (OnLevelFailed != null) OnLevelFailed();
         }
@@ -76,20 +75,15 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             tutorialController.Deactivate();
             scoreController.IncreaseScore();
-            progressController.NextLevel();
+            progressController.NextMap();
 
-            if (progressController.IsFlowCompleted())
+            if (progressController.IsLevelCompleted())
             {
-                progressController.NextFlow();
+                progressController.NextLevel();
 
-                if (progressController.IsGameCompleted())
+                if (progressController.IsFlowCompleted())
                 {
-                    progressController.ResetFlow(scoreController.GlobalScore);
-
-                    if (OnGameCompleted != null) OnGameCompleted();
-                }
-                else
-                {
+                    progressController.NextFlow(scoreController.LevelScore);
                     if (OnFlowCompleted != null) OnFlowCompleted();
                 }
             }
@@ -119,7 +113,7 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             tutorialController.Activate();
             levelController.Clear();
-            levelController.Init(progressController.Flow, progressController.Level);
+            levelController.Init(progressController.Level, progressController.Map);
         }
 
         public void MoveLeft()
