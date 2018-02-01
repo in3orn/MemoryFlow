@@ -86,11 +86,6 @@ namespace Dev.Krk.MemoryFlow.State
             StartCoroutine(ChangeState(StateEnum.Summary, summary.Show));
         }
 
-        public void ShowShop()
-        {
-            StartCoroutine(ChangeState(StateEnum.Settings, shop.Show));
-        }
-
         public void ShowSettings()
         {
             StartCoroutine(ChangeState(StateEnum.Settings, settings.Show));
