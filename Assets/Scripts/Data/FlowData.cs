@@ -5,7 +5,7 @@ namespace Dev.Krk.MemoryFlow.Data
     [Serializable]
     public class FlowData
     {
-        public int ScoreLock;
+        public int Level;
 
         public LevelData[] Levels;
     }

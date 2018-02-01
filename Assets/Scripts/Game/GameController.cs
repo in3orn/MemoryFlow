@@ -33,7 +33,6 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             levelController.OnLevelCompleted += ProcessLevelCompleted;
             levelController.OnLevelFailed += ProcessLevelFailed;
-            //levelController.OnLevelEnded+= ProcessLevelEnded;
 
             levelController.OnPlayerMoved += ProcessPlayerMoved;
             levelController.OnPlayerFailed += ProcessPlayerDied;
@@ -45,7 +44,6 @@ namespace Dev.Krk.MemoryFlow.Game
             {
                 levelController.OnLevelCompleted -= ProcessLevelCompleted;
                 levelController.OnLevelFailed -= ProcessLevelFailed;
-                //levelController.OnLevelEnded -= ProcessLevelEnded;
 
                 levelController.OnPlayerMoved -= ProcessPlayerMoved;
                 levelController.OnPlayerFailed -= ProcessPlayerDied;
@@ -66,7 +64,7 @@ namespace Dev.Krk.MemoryFlow.Game
         public void ProcessLevelFailed()
         {
             tutorialController.Deactivate();
-            progressController.ResetFlow();
+            progressController.ResetFlow(scoreController.Level);
 
             if (OnLevelFailed != null) OnLevelFailed();
         }
@@ -77,15 +75,10 @@ namespace Dev.Krk.MemoryFlow.Game
             scoreController.IncreaseScore();
             progressController.NextMap();
 
-            if (progressController.IsLevelCompleted())
+            if (progressController.IsFlowCompleted())
             {
-                progressController.NextLevel();
-
-                if (progressController.IsFlowCompleted())
-                {
-                    progressController.NextFlow(scoreController.LevelScore);
-                    if (OnFlowCompleted != null) OnFlowCompleted();
-                }
+                progressController.NextFlow(scoreController.Level);
+                if (OnFlowCompleted != null) OnFlowCompleted();
             }
             else
             {
@@ -113,7 +106,7 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             tutorialController.Activate();
             levelController.Clear();
-            levelController.Init(progressController.Level, progressController.Map);
+            levelController.Init(progressController.Flow, progressController.Map);
         }
 
         public void MoveLeft()

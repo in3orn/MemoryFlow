@@ -78,25 +78,22 @@ namespace Dev.Krk.MemoryFlow.State
 
         public void PlayGame()
         {
-            StartCoroutine(ChangeState(game.StartNewRun));
-            if (OnStateChanged != null) OnStateChanged(StateEnum.Gameplay);
+            StartCoroutine(ChangeState(StateEnum.Gameplay, game.StartNewRun));
         }
 
         public void ShowSummary()
         {
-            StartCoroutine(ChangeState(summary.Show));
-            if (OnStateChanged != null) OnStateChanged(StateEnum.Summary);
+            StartCoroutine(ChangeState(StateEnum.Summary, summary.Show));
         }
 
         public void ShowShop()
         {
-            if (OnStateChanged != null) OnStateChanged(StateEnum.Settings);
+            StartCoroutine(ChangeState(StateEnum.Settings, shop.Show));
         }
 
         public void ShowSettings()
         {
-            StartCoroutine(ChangeState(settings.Show));
-            if (OnStateChanged != null) OnStateChanged(StateEnum.Settings);
+            StartCoroutine(ChangeState(StateEnum.Settings, settings.Show));
         }
 
         private void ProcessFlowCompleted()
@@ -112,9 +109,8 @@ namespace Dev.Krk.MemoryFlow.State
 
         private void ProcessResourcesInitialized()
         {
-            if (scoreController.LevelScore > 0)
+            if (scoreController.Level > 0)
             {
-                progressController.NextFlow(scoreController.LevelScore);
                 ShowSummary();
             }
             else
@@ -123,10 +119,13 @@ namespace Dev.Krk.MemoryFlow.State
             }
         }
 
-        private IEnumerator ChangeState(StateChangeAction action)
+        private IEnumerator ChangeState(StateEnum state, StateChangeAction action)
         {
             if (delay > 0f) yield return new WaitForSeconds(delay);
+
             action();
+
+            if (OnStateChanged != null) OnStateChanged(state);
         }
     }
 }
