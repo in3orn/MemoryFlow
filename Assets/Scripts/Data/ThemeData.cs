@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dev.Krk.MemoryFlow.Sounds;
+using System;
 using UnityEngine;
 
 namespace Dev.Krk.MemoryFlow.Data
@@ -19,7 +20,8 @@ namespace Dev.Krk.MemoryFlow.Data
         [SerializeField]
         private Color[] colors;
 
-        //TODO music & sounds :)
+        [SerializeField]
+        private SoundData music;
 
         public bool Locked;
 
@@ -27,6 +29,7 @@ namespace Dev.Krk.MemoryFlow.Data
 
         //TODO other unlocks
 
+        public SoundData Music { get { return music; } }
 
         public Color GetColor(ColorEnum color)
         {
