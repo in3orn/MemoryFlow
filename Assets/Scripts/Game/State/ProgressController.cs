@@ -6,6 +6,8 @@ namespace Dev.Krk.MemoryFlow.Game.State
 {
     public class ProgressController : MonoBehaviour
     {
+        private readonly string FLOW = "Flow";
+
         [SerializeField]
         private FlowsDataInitializer flowsDataController;
 
@@ -19,6 +21,28 @@ namespace Dev.Krk.MemoryFlow.Game.State
 
         void Start()
         {
+            LoadData();
+        }
+
+        void OnApplicationPause(bool pauseStatus)
+        {
+            if (pauseStatus)
+                SaveData();
+        }
+
+        void OnApplicationQuit()
+        {
+            SaveData();
+        }
+        
+        private void SaveData()
+        {
+            PlayerPrefs.SetInt(FLOW, flow);
+        }
+
+        private void LoadData()
+        {
+            flow = PlayerPrefs.GetInt(FLOW);
         }
 
         public bool IsFlowCompleted()
