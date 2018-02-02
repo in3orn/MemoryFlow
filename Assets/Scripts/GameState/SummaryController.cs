@@ -17,9 +17,6 @@ namespace Dev.Krk.MemoryFlow.Summary
         [SerializeField]
         private PopUpCanvas summary;
 
-        [SerializeField]
-        private PopUpCanvas menu;
-
         private StateEnum state;
 
         void Start()
@@ -29,14 +26,6 @@ namespace Dev.Krk.MemoryFlow.Summary
 
         public void Show()
         {
-            if(state == StateEnum.Idle && scoreController.CurrentScore > 0)
-            {
-                menu.HideImmediately();
-            }
-            else
-            {
-                menu.ShowImmediately();
-            }
             summary.Show();
         }
 
@@ -51,7 +40,6 @@ namespace Dev.Krk.MemoryFlow.Summary
             {
                 scoreController.TransferScore();
                 state = StateEnum.Menu;
-                menu.Show();
             }
         }
 

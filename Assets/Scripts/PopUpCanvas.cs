@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Dev.Krk.MemoryFlow.Common.Animations;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class PopUpCanvas : MonoBehaviour
@@ -18,48 +19,44 @@ public class PopUpCanvas : MonoBehaviour
 
     private CanvasGroup canvasGroup;
 
-    private Animator[] animators;
+    private ShowAnimator[] animators;
 
     void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
         canvasGroup.blocksRaycasts = false;
 
-        animators = GetComponentsInChildren<Animator>();
+        animators = GetComponentsInChildren<ShowAnimator>();
     }
 
     public void Show()
     {
         canvasGroup.blocksRaycasts = true;
-        StartCoroutine(SetOpacity(canvasGroup.alpha, 1f, showDuration, showDelay));
+        //StartCoroutine(SetOpacity(canvasGroup.alpha, 1f, showDuration, showDelay));
 
         foreach (var animator in animators)
-        {
-            animator.SetBool("shown", true);
-        }
+            animator.Show();
     }
 
     public void Hide()
     {
         canvasGroup.blocksRaycasts = false;
-        StartCoroutine(SetOpacity(canvasGroup.alpha, 0f, hideDuration, hideDelay));
+        //StartCoroutine(SetOpacity(canvasGroup.alpha, 0f, hideDuration, hideDelay));
 
         foreach (var animator in animators)
-        {
-            animator.SetBool("shown", false);
-        }
+            animator.Hide();
     }
 
     public void ShowImmediately()
     {
         canvasGroup.blocksRaycasts = true;
-        canvasGroup.alpha = 1f;
+        //canvasGroup.alpha = 1f;
     }
 
     public void HideImmediately()
     {
         canvasGroup.blocksRaycasts = false;
-        canvasGroup.alpha = 0f;
+        //canvasGroup.alpha = 0f;
     }
 
     private IEnumerator SetOpacity(float from, float to, float duration, float delay)
