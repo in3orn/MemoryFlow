@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Dev.Krk.MemoryFlow.Game.State;
+using System.Collections;
 
 namespace Dev.Krk.MemoryFlow.Summary
 {
@@ -15,6 +16,9 @@ namespace Dev.Krk.MemoryFlow.Summary
         private ScoreController scoreController;
 
         [SerializeField]
+        private float transferScoreDelay;
+
+        [SerializeField]
         private PopUpCanvas summary;
 
         private StateEnum state;
@@ -27,20 +31,19 @@ namespace Dev.Krk.MemoryFlow.Summary
         public void Show()
         {
             summary.Show();
+            StartCoroutine(TransferScore());
+        }
+
+        private IEnumerator TransferScore()
+        {
+            yield return new WaitForSeconds(transferScoreDelay);
+
+            scoreController.TransferScore();
         }
 
         public void Hide()
         {
             summary.Hide();
-        }
-
-        public void OnTapDown()
-        {
-            if(state == StateEnum.Idle)
-            {
-                scoreController.TransferScore();
-                state = StateEnum.Menu;
-            }
         }
 
         public void OnPlayPressed()

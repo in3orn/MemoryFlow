@@ -65,7 +65,8 @@ namespace Dev.Krk.MemoryFlow.Game.State
 
         public void TransferScore()
         {
-            StartCoroutine(TransferScoreInternal());
+            if (CurrentScore > 0)
+                StartCoroutine(TransferScoreInternal());
         }
 
         private IEnumerator TransferScoreInternal()
@@ -119,7 +120,7 @@ namespace Dev.Krk.MemoryFlow.Game.State
 
         private void UpdateMaxLevelScore()
         {
-            maxLevelScore = (level+1) * 10; //TODO some more sophisticated function :P
+            maxLevelScore = (level + 1) * 10; //TODO some more sophisticated function :P
         }
     }
 }
