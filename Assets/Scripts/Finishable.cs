@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Dev.Krk.MemoryFlow.Game;
 
 [RequireComponent(typeof(CircleCollider2D))]
 [RequireComponent(typeof(Showable))]

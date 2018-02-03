@@ -1,132 +1,120 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(SpriteRenderer))]
-[RequireComponent(typeof(Showable))]
-public class Field : MonoBehaviour
+namespace Dev.Krk.MemoryFlow.Game
 {
-    public static readonly float SIZE = 1.28f;
-
-	public enum TypeEnum
-	{
-		Horizontal = 0,
-		Vertical
-	}
-
-	[SerializeField]
-	private float setColorDelay = 0f;
-
-	[SerializeField]
-	private float setColorDuration = 0.5f;
-
-	[SerializeField]
-	public Color DefaultColor;
-
-	[SerializeField]
-	public Color ValidColor;
-
-	[SerializeField]
-	private Vector2 fallPosition = Vector2.down * 20f;
-
-	[SerializeField]
-	private float fallDelay = 0f;
-
-	[SerializeField]
-	private float fallDuration = 2f;
-
-	[SerializeField]
-	private Vector3 fallRotation = Vector3.back * 30;
-
-	private SpriteRenderer spriteRenderer;
-
-    private Showable showable;
-
-	private bool valid;
-
-	public bool Valid { get { return valid; } }
-
-	private bool broken;
-
-	public bool Broken { get { return broken; } }
-
-    public void Init(Vector2 position, bool valid)
+    public class Field : MonoBehaviour
     {
-		transform.position = position;
-		this.valid = valid;
-		spriteRenderer.color = GetInitColor();
-		broken = false;
-	}
+        public static readonly float SIZE = 1.28f;
 
-    void Awake()
-    {
-		spriteRenderer = GetComponent<SpriteRenderer>();
-        showable = GetComponent<Showable>();
+        public enum TypeEnum
+        {
+            Horizontal = 0,
+            Vertical
+        }
+
+        private enum StateEnum
+        {
+            Hidden = 0,
+            Shown,
+            Masked,
+            Visited,
+            Broken
+        }
+
+        private StateEnum state;
+
+        private StateEnum State
+        {
+            get { return state; }
+            set
+            {
+                if (state != value)
+                {
+                    state = value;
+                    activeAnimator.SetInteger("state", (int)state);
+                    inactiveAnimator.SetInteger("state", (int)state);
+                    containerAnimator.SetInteger("state", (int)state);
+                }
+            }
+        }
+
+        private TypeEnum type;
+
+        public TypeEnum Type
+        {
+            get { return type; }
+            set
+            {
+                if(type != value)
+                {
+                    type = value;
+                    float rotation = type == TypeEnum.Vertical ? 90f : 0f;
+                    rotator.rotation = Quaternion.Euler(0f, 0f, rotation);
+                }
+            }
+        }
+
+        private bool valid;
+
+        public bool Valid { get { return valid; } }
+
+        public bool Broken { get { return State == StateEnum.Broken; } }
+
+        [SerializeField]
+        private Transform rotator;
+
+        [SerializeField]
+        private Animator activeAnimator;
+
+        [SerializeField]
+        private Animator inactiveAnimator;
+
+        [SerializeField]
+        private Animator containerAnimator;
+
+        public void Init(Vector2 position, bool valid)
+        {
+            transform.position = position;
+            this.valid = valid;
+        }
+
+        public void Show()
+        {
+            if (valid && State == StateEnum.Hidden)
+            {
+                State = StateEnum.Shown;
+            }
+        }
+
+        public void Mask()
+        {
+            if (State == StateEnum.Hidden || State == StateEnum.Shown)
+            {
+                State = StateEnum.Masked;
+            }
+        }
+
+        public void Visit()
+        {
+            if (valid && (State == StateEnum.Shown || State == StateEnum.Masked))
+            {
+                State = StateEnum.Visited;
+            }
+        }
+
+        public void Break()
+        {
+            if (State == StateEnum.Masked)
+            {
+                State = StateEnum.Broken;
+            }
+
+        }
+
+        public void Hide()
+        {
+            State = StateEnum.Hidden;
+        }
     }
-
-	public void Break()
-	{
-		broken = true;
-		StartCoroutine(Fall());
-	}
-
-    public void Show()
-    {
-        showable.Show();
-    }
-
-    public void Hide()
-    {
-        showable.Hide();
-    }
-
-	public void Mask()
-	{
-		StartCoroutine (SetColor (spriteRenderer.color, DefaultColor, setColorDelay, setColorDuration));
-	}
-
-	public void Unmask()
-	{
-		StartCoroutine (SetColor (spriteRenderer.color, ValidColor, setColorDelay, setColorDuration));
-	}
-
-	private IEnumerator SetColor(Color from, Color to, float delay, float duration)
-	{
-		if (delay > 0f)
-		{
-			yield return new WaitForSeconds(delay);
-		}
-
-		float t = 0f;
-		while (true)
-		{
-			t += Time.deltaTime / duration;
-			spriteRenderer.color = Color.Lerp(from, to, t);
-
-			if (t >= 1) break;
-			yield return null;
-		}
-	}
-
-	private IEnumerator Fall()
-	{
-		Vector2 from = transform.position;
-		Vector2 to = from + fallPosition;
-
-		float t = 0f;
-		while (true)
-		{
-			t += Time.deltaTime / fallDuration;
-			transform.position = Vector2.Lerp(from, to, t);
-			transform.Rotate (fallRotation);
-
-			if (t >= 1) break;
-			yield return null;
-		}
-	}
-
-	private Color GetInitColor()
-	{
-		Color color = valid ? ValidColor : DefaultColor;
-        return new Color(color.r, color.g, color.b, 0f);
-	}
 }

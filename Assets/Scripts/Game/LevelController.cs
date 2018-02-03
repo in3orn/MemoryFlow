@@ -224,7 +224,7 @@ namespace Dev.Krk.MemoryFlow.Game
 
                 if (field.Valid)
                 {
-                    field.Unmask();
+                    field.Visit();
                     player.Move(vector * Field.SIZE);
                     if (OnPlayerMoved != null) OnPlayerMoved(vector);
                     

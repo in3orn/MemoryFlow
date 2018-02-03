@@ -2,6 +2,7 @@
 using UnityEngine.Events;
 using System.Collections;
 using Dev.Krk.MemoryFlow.Data;
+using Dev.Krk.MemoryFlow.Game;
 
 public class FieldMap : MonoBehaviour
 {

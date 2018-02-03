@@ -2,6 +2,8 @@
 using Dev.Krk.MemoryFlow.Game;
 using Dev.Krk.MemoryFlow.Game.State;
 using Dev.Krk.MemoryFlow.Data;
+using Dev.Krk.MemoryFlow.Game.Theme;
+using System;
 
 public class FieldsFactory : MonoBehaviour
 {
@@ -24,24 +26,38 @@ public class FieldsFactory : MonoBehaviour
             {
                 GameObject instance = Instantiate(pattern, level.gameObject.transform) as GameObject;
 
+                InitThemeSprites(instance);
+
                 Field field = instance.GetComponent<Field>();
-
-                field.DefaultColor = themeController.GetCurrentTheme().GetColor(ThemeData.ColorEnum.BkgSecond);
-                field.ValidColor = themeController.GetCurrentTheme().GetColor(ThemeData.ColorEnum.Main);
-
-                Vector2 position = new Vector2 (x * Field.SIZE, y * Field.SIZE);
-				if (fieldType == Field.TypeEnum.Horizontal) {
-					position += Vector2.right * Field.SIZE / 2;
-				} else {
-					position += Vector2.up * Field.SIZE / 2;
-					field.transform.Rotate (0f, 0f, 90f);
-				}
-                field.Init(position, fieldTypes[y, x] > 0);
-
+                InitField(field, x ,y, fieldType, fieldTypes[y, x] > 0);
                 fields[y, x] = field;
             }
         }
 
         return fields;
+    }
+
+    private void InitField(Field field, int x, int y, Field.TypeEnum fieldType, bool valid)
+    {
+        Vector2 position = new Vector2(x * Field.SIZE, y * Field.SIZE);
+        if (fieldType == Field.TypeEnum.Horizontal)
+        {
+            position += Vector2.right * Field.SIZE / 2;
+        }
+        else
+        {
+            position += Vector2.up * Field.SIZE / 2;
+            field.Type = fieldType;
+        }
+        field.Init(position, valid);
+    }
+
+    private void InitThemeSprites(GameObject instance)
+    {
+        ThemeSprite[] themeSprites = instance.GetComponentsInChildren<ThemeSprite>();
+        foreach(var sprite in themeSprites)
+        {
+            sprite.Controller = themeController;
+        }
     }
 }
