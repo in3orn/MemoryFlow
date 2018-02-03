@@ -91,7 +91,7 @@ public class FieldMap : MonoBehaviour
         if (x >= 0 && y < VerticalLength + 1)
         {
             Field field = GetHorizontalField(x, y);
-            return !field.Broken;
+            return !field.Hidden && !field.Broken;
         }
 
         return false;
@@ -102,7 +102,7 @@ public class FieldMap : MonoBehaviour
         if (x < HorizontalLength && y < VerticalLength + 1)
         {
             Field field = GetHorizontalField(x, y);
-            return !field.Broken;
+            return !field.Hidden && !field.Broken;
         }
 
         return false;
@@ -113,7 +113,7 @@ public class FieldMap : MonoBehaviour
         if (x < HorizontalLength + 1 && y < VerticalLength)
         {
             Field field = GetVerticalField(x, y);
-            return !field.Broken;
+            return !field.Hidden && !field.Broken;
         }
 
         return false;
@@ -124,7 +124,7 @@ public class FieldMap : MonoBehaviour
         if (x < HorizontalLength + 1 && y >= 0)
         {
             Field field = GetVerticalField(x, y);
-            return !field.Broken;
+            return !field.Hidden && !field.Broken;
         }
 
         return false;

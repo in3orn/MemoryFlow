@@ -97,7 +97,7 @@ namespace Dev.Krk.MemoryFlow.Game
             queuedFields.Clear();
             queuedMoves.Clear();
 
-            initCenter();
+            InitCenter();
 
             state = StateEnum.Idle;
             fieldMap.ShowPreview();
@@ -111,7 +111,7 @@ namespace Dev.Krk.MemoryFlow.Game
             fieldMap.Clear();
         }
 
-        private void initCenter()
+        private void InitCenter()
         {
             center.transform.position = new Vector2(fieldMap.HorizontalLength * Field.SIZE, fieldMap.VerticalLength * Field.SIZE) * 0.5f;
         }
@@ -216,18 +216,18 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             if ((state == StateEnum.Showing || state == StateEnum.Playing))
             {
-                if (state == StateEnum.Showing)
-                {
-                    state = StateEnum.Playing;
-                    fieldMap.ShowPlayMode();
-                }
-
                 if (field.Valid)
                 {
-                    field.Visit();
+                    field.Visit(player.transform.position);
                     player.Move(vector * Field.SIZE);
+
+                    if (state == StateEnum.Showing)
+                    {
+                        state = StateEnum.Playing;
+                        fieldMap.ShowPlayMode();
+                    }
+
                     if (OnPlayerMoved != null) OnPlayerMoved(vector);
-                    
                 }
                 else
                 {

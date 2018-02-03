@@ -46,7 +46,7 @@ namespace Dev.Krk.MemoryFlow.Game
             get { return type; }
             set
             {
-                if(type != value)
+                if (type != value)
                 {
                     type = value;
                     float rotation = type == TypeEnum.Vertical ? 90f : 0f;
@@ -60,6 +60,10 @@ namespace Dev.Krk.MemoryFlow.Game
         public bool Valid { get { return valid; } }
 
         public bool Broken { get { return State == StateEnum.Broken; } }
+
+        public bool Masked { get { return State == StateEnum.Masked; } }
+
+        public bool Hidden { get { return State == StateEnum.Hidden; } }
 
         [SerializeField]
         private Transform rotator;
@@ -95,10 +99,12 @@ namespace Dev.Krk.MemoryFlow.Game
             }
         }
 
-        public void Visit()
+        public void Visit(Vector3 from)
         {
             if (valid && (State == StateEnum.Shown || State == StateEnum.Masked))
             {
+                bool reversed = from.x - transform.position.x > Field.SIZE / 4f || from.y - transform.position.y > Field.SIZE / 4f;
+                activeAnimator.SetBool("reversed", reversed);
                 State = StateEnum.Visited;
             }
         }

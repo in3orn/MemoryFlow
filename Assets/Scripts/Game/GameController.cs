@@ -94,11 +94,13 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public void ProcessPlayerDied()
         {
-            //TODO could be done directly in livesController? but what with failing level :P
-            livesController.DecreaseLives();
-            if (livesController.Lives <= 0)
+            if (progressController.Flow > 0)
             {
-                levelController.FailLevel();
+                livesController.DecreaseLives();
+                if (livesController.Lives <= 0)
+                {
+                    levelController.FailLevel();
+                }
             }
         }
 

@@ -25,8 +25,11 @@ namespace Dev.Krk.MemoryFlow.Game.Theme
 
         void OnEnable()
         {
-            controller.OnThemeUpdated += ProcessThemeUpdated;
-            controller.OnInitialized += UpdateColor;
+            if (controller != null)
+            {
+                controller.OnThemeUpdated += ProcessThemeUpdated;
+                controller.OnInitialized += UpdateColor;
+            }
         }
 
         void OnDisable()
