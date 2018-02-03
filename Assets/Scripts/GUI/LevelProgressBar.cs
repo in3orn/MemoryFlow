@@ -12,9 +12,9 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 
         [SerializeField]
         private Image progressBar;
-
+        
         [SerializeField]
-        private Animator[] animators;
+        private Animator animator;
 
         void Start()
         {
@@ -22,7 +22,7 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 
         void OnEnable()
         {
-            scoreController.OnScoreTransferred += ProcessScoreUpdated;
+            scoreController.OnScoreTransferred += ProcessScoreTransferred;
             scoreController.OnInitialized += UpdateProgress;
         }
 
@@ -30,15 +30,15 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
         {
             if (scoreController != null)
             {
-                scoreController.OnLevelUpdated -= ProcessScoreUpdated;
+                scoreController.OnScoreTransferred -= ProcessScoreTransferred;
                 scoreController.OnInitialized -= UpdateProgress;
             }
         }
 
-        private void ProcessScoreUpdated()
+        private void ProcessScoreTransferred()
         {
             UpdateProgress();
-            AnimateScore("UpdateLevel");
+            AnimateScore("TransferScore");
         }
 
         private void UpdateProgress()
@@ -48,10 +48,7 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 
         private void AnimateScore(string trigger)
         {
-            foreach (var animator in animators)
-            {
-                animator.SetTrigger(trigger);
-            }
+            animator.SetTrigger(trigger);
         }
     }
 }

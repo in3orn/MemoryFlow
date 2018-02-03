@@ -13,8 +13,12 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
         [SerializeField]
         private Text scoreLabel;
 
-        [SerializeField]
-        private Animator[] animators;
+        private Animator animator;
+
+        void Awake()
+        {
+            animator = GetComponent<Animator>();
+        }
 
         void Start()
         {
@@ -50,10 +54,7 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 
         private void AnimateScore(string trigger)
         {
-            foreach (var animator in animators)
-            {
-                animator.SetTrigger(trigger);
-            }
+            animator.SetTrigger(trigger);
         }
     }
 }
