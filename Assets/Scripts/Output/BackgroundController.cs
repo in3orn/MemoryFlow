@@ -3,10 +3,18 @@ using UnityEngine;
 
 namespace Dev.Krk.MemoryFlow.Output
 {
-    public class VibrationController : MonoBehaviour
+    [RequireComponent(typeof(Animator))]
+    public class BackgroundController : MonoBehaviour
     {
         [SerializeField]
         private LevelController levelController;
+
+        private Animator animator;
+
+        void Awake()
+        {
+            animator = GetComponent<Animator>();
+        }
 
         void Start()
         {
@@ -28,7 +36,7 @@ namespace Dev.Krk.MemoryFlow.Output
 
         private void ProcessPlayerFailed()
         {
-            Handheld.Vibrate();
+            animator.SetTrigger("PlayerFailed");
         }
     }
 }
