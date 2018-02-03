@@ -5,10 +5,10 @@ namespace Dev.Krk.MemoryFlow.Game.State
     public class TutorialController : MonoBehaviour
     {
         [SerializeField]
-        PopUpCanvas tutorialCanvas;
+        private float delay;
 
         [SerializeField]
-        private float delay;
+        Animator[] animators;
 
         private float startTime;
 
@@ -24,8 +24,7 @@ namespace Dev.Krk.MemoryFlow.Game.State
         {
             if (activated && !shown && Time.time - startTime > delay)
             {
-                shown = true;
-                tutorialCanvas.Show();
+                Show();
             }
         }
 
@@ -47,6 +46,16 @@ namespace Dev.Krk.MemoryFlow.Game.State
             }
         }
 
+        public void Show()
+        {
+            if (!shown)
+            {
+                shown = true;
+                foreach (var animator in animators)
+                    animator.SetBool("shown", shown);
+            }
+        }
+
         public void Hide()
         {
             startTime = Time.time;
@@ -54,7 +63,8 @@ namespace Dev.Krk.MemoryFlow.Game.State
             if (shown)
             {
                 shown = false;
-                tutorialCanvas.Hide();
+                foreach (var animator in animators)
+                    animator.SetBool("shown", shown);
             }
         }
     }
