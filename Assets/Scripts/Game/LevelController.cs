@@ -18,6 +18,9 @@ namespace Dev.Krk.MemoryFlow.Game
         public UnityAction OnLevelCompleted;
         public UnityAction OnLevelFailed;
 
+        public UnityAction OnFlowCompleted;
+
+
         public enum StateEnum
         {
             Idle = 0,
@@ -82,7 +85,6 @@ namespace Dev.Krk.MemoryFlow.Game
             player.OnMoved += ProcessNextMove;
 
             fieldMap.OnShown += StartGame;
-            fieldMap.OnHidden += FinishGame;
 
             finish.OnFinished += FinishLevel;
         }
@@ -115,7 +117,6 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public void Reset()
         {
-            Clear();
             ResetOldFields();
         }
 
@@ -134,9 +135,7 @@ namespace Dev.Krk.MemoryFlow.Game
             {
                 offset.x += fieldMap.HorizontalLength;
                 offset.y += fieldMap.VerticalLength;
-
-                MoveToOld(fieldMap.HorizontalFields);
-                MoveToOld(fieldMap.VerticalFields);
+                
                 fieldMap.Clear();
             }
         }
@@ -147,7 +146,18 @@ namespace Dev.Krk.MemoryFlow.Game
             {
                 for (int x = 0; x < fields.GetLength(1); x++)
                 {
-                    oldFields.Add(fields[y, x]);
+                    Field field = fields[y, x];
+                    if (field != null)
+                    {
+                        if (field.Valid)
+                        {
+                            oldFields.Add(field);
+                        }
+                        else
+                        {
+                            Destroy(field.gameObject, 2f);
+                        }
+                    }
                 }
             }
         }
@@ -353,18 +363,15 @@ namespace Dev.Krk.MemoryFlow.Game
 
             center.transform.position = Vector3.zero;
 
-            if (OnLevelFailed != null) OnLevelFailed();
+            if (OnLevelFailed != null)
+                OnLevelFailed();
         }
 
-        public void FinishGame()
+        public void CompleteFlow()
         {
-            StartCoroutine(FinishGameInternal());
-        }
+            StartCoroutine(CreateShape());
 
-        private IEnumerator FinishGameInternal()
-        {
-            yield return new WaitForSeconds(finishDuration);
-            if (OnLevelEnded != null) OnLevelEnded();
+            center.transform.position = Vector3.zero;
         }
 
         private void ShowActors()
@@ -390,16 +397,64 @@ namespace Dev.Krk.MemoryFlow.Game
                     int x = s - ds - 1;
                     foreach (var field in oldFields)
                     {
-                        if (field.Valid && !field.Broken)
+                        if (!field.Broken)
                         {
                             Vector2 pos = field.transform.position / Field.SIZE;
-                            if ((int)pos.x == x && (int)pos.y == y && field.Valid) field.Break();
+                            if ((int)pos.x == x && (int)pos.y == y) field.Break();
                         }
                     }
                 }
-                yield return new WaitForSeconds(0.5f / (float)size);
+                yield return new WaitForSeconds(0.5f / size);
+            }
+        }
+
+        private IEnumerator CreateShape()
+        {
+            int size = fieldMap.HorizontalLength + fieldMap.VerticalLength + (int)offset.x + (int)offset.y + 1;
+            for (int s = size - 1; s > 0; s--)
+            {
+                for (int ds = 0; ds < s; ds++)
+                {
+                    int y = ds;
+                    int x = s - ds - 1;
+                    foreach (var field in oldFields)
+                    {
+                        Vector2 pos = field.transform.position / Field.SIZE;
+                        if ((int)pos.x == x && (int)pos.y == y && field.Valid)
+                        {
+                            StartCoroutine(MoveFieldTo(field, new Vector2(-3f + Random.value * 6f, -3f + Random.value * 6f)));
+                        }
+                    }
+                }
+                yield return new WaitForSeconds(0.5f / size);
             }
 
+            yield return new WaitForSeconds(1f);
+            
+            foreach (var field in oldFields)
+            {
+                field.Hide();
+                yield return new WaitForSeconds(0.5f / size);
+            }
+
+            if (OnFlowCompleted != null)
+                OnFlowCompleted();
+        }
+
+        private IEnumerator MoveFieldTo(Field field, Vector3 endPosition)
+        {
+            float duration = 1f;
+            float time = 0;
+            Vector3 startPosition = field.transform.position;
+            while (time < duration)
+            {
+                field.transform.position = Vector3.Lerp(startPosition, endPosition, time / duration);
+
+                time += Time.deltaTime;
+                yield return null;
+            }
+
+            field.transform.position = endPosition;
         }
     }
 }

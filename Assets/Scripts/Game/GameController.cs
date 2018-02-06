@@ -34,6 +34,8 @@ namespace Dev.Krk.MemoryFlow.Game
             levelController.OnLevelCompleted += ProcessLevelCompleted;
             levelController.OnLevelFailed += ProcessLevelFailed;
 
+            levelController.OnFlowCompleted += ProcessFlowCompleted;
+
             levelController.OnPlayerMoved += ProcessPlayerMoved;
             levelController.OnPlayerFailed += ProcessPlayerDied;
         }
@@ -44,6 +46,8 @@ namespace Dev.Krk.MemoryFlow.Game
             {
                 levelController.OnLevelCompleted -= ProcessLevelCompleted;
                 levelController.OnLevelFailed -= ProcessLevelFailed;
+
+                levelController.OnFlowCompleted -= ProcessFlowCompleted;
 
                 levelController.OnPlayerMoved -= ProcessPlayerMoved;
                 levelController.OnPlayerFailed -= ProcessPlayerDied;
@@ -77,14 +81,18 @@ namespace Dev.Krk.MemoryFlow.Game
 
             if (progressController.IsFlowCompleted())
             {
-                //TODO flow completed animation
-                progressController.NextFlow(scoreController.Level);
-                if (OnFlowCompleted != null) OnFlowCompleted();
+                levelController.CompleteFlow();
             }
             else
             {
                 StartCoroutine(StartLevelWithDelay());
             }
+        }
+
+        private void ProcessFlowCompleted()
+        {
+            progressController.NextFlow(scoreController.Level);
+            if (OnFlowCompleted != null) OnFlowCompleted();
         }
 
         private IEnumerator StartLevelWithDelay()

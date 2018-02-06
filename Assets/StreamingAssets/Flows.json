@@ -33,30 +33,6 @@
 					"Height": 3,
 					"MinDifficulty": 0.25,
 					"MaxDifficulty": 0.5
-				},
-				{
-					"Width": 3,
-					"Height": 4,
-					"MinDifficulty": 0.25,
-					"MaxDifficulty": 0.5
-				},
-				{
-					"Width": 3,
-					"Height": 4,
-					"MinDifficulty": 0.5,
-					"MaxDifficulty": 0.75
-				},
-				{
-					"Width": 4,
-					"Height": 4,
-					"MinDifficulty": 0.25,
-					"MaxDifficulty": 0.5
-				},
-				{
-					"Width": 4,
-					"Height": 4,
-					"MinDifficulty": 0.25,
-					"MaxDifficulty": 0.5
 				}
 			]
 		},
