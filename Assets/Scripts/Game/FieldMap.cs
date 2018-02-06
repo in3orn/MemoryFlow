@@ -251,12 +251,12 @@ public class FieldMap : MonoBehaviour
         }
     }
 
-    public void HideInvalid()
+    public void HideNotValid()
     {
-        StartCoroutine(HideInvalidFields());
+        StartCoroutine(HideNotValidFields());
     }
 
-    private IEnumerator HideInvalidFields()
+    private IEnumerator HideNotValidFields()
     {
         int size = HorizontalLength + VerticalLength + 1;
         for (int s = 1; s < size; s++)
@@ -278,7 +278,7 @@ public class FieldMap : MonoBehaviour
         if (x >= 0 && y >= 0 && x < fields.GetLength(0) && y < fields.GetLength(1))
         {
             Field field = fields[x, y];
-            if (!field.Valid) field.Hide();
+            if (!field.Valid || field.Masked) field.Hide();
         }
     }
 }

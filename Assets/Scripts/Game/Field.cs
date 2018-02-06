@@ -111,7 +111,7 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public void Break()
         {
-            if (State == StateEnum.Masked)
+            if (State == StateEnum.Masked || State == StateEnum.Visited)
             {
                 State = StateEnum.Broken;
             }

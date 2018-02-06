@@ -329,7 +329,11 @@ namespace Dev.Krk.MemoryFlow.Game
         public void FinishLevel()
         {
             state = StateEnum.Finished;
-            fieldMap.HideInvalid();
+
+            MoveToOld(fieldMap.HorizontalFields);
+            MoveToOld(fieldMap.VerticalFields);
+
+            fieldMap.HideNotValid();
             HideActors();
 
             if (OnLevelCompleted != null) OnLevelCompleted();
@@ -338,8 +342,16 @@ namespace Dev.Krk.MemoryFlow.Game
         public void FailLevel()
         {
             state = StateEnum.Failed;
-            fieldMap.Hide();
+
+            MoveToOld(fieldMap.HorizontalFields);
+            MoveToOld(fieldMap.VerticalFields);
+
+            StartCoroutine(BreakValidFields());
+
+            fieldMap.HideNotValid();
             HideActors();
+
+            center.transform.position = Vector3.zero;
 
             if (OnLevelFailed != null) OnLevelFailed();
         }
@@ -365,6 +377,29 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             player.Hide();
             finish.Hide();
+        }
+
+        private IEnumerator BreakValidFields()
+        {
+            int size = fieldMap.HorizontalLength + fieldMap.VerticalLength + (int)offset.x + (int)offset.y + 1;
+            for (int s = size - 1; s > 0; s--)
+            {
+                for (int ds = 0; ds < s; ds++)
+                {
+                    int y = ds;
+                    int x = s - ds - 1;
+                    foreach (var field in oldFields)
+                    {
+                        if (field.Valid && !field.Broken)
+                        {
+                            Vector2 pos = field.transform.position / Field.SIZE;
+                            if ((int)pos.x == x && (int)pos.y == y && field.Valid) field.Break();
+                        }
+                    }
+                }
+                yield return new WaitForSeconds(0.5f / (float)size);
+            }
+
         }
     }
 }

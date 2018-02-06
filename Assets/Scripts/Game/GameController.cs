@@ -77,6 +77,7 @@ namespace Dev.Krk.MemoryFlow.Game
 
             if (progressController.IsFlowCompleted())
             {
+                //TODO flow completed animation
                 progressController.NextFlow(scoreController.Level);
                 if (OnFlowCompleted != null) OnFlowCompleted();
             }
