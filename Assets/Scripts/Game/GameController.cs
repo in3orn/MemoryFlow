@@ -52,7 +52,7 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public void StartNewRun()
         {
-            livesController.ResetLives();
+            ResetLevel();
             StartLevel();
         }
 
@@ -102,6 +102,12 @@ namespace Dev.Krk.MemoryFlow.Game
                     levelController.FailLevel();
                 }
             }
+        }
+
+        private void ResetLevel()
+        {
+            livesController.ResetLives();
+            levelController.Reset();
         }
 
         private void StartLevel()

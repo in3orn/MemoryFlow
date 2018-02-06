@@ -2,7 +2,6 @@
 using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
-
 using Dev.Krk.MemoryFlow.Game.Level;
 
 //TODO refactor - to much responsibilities
@@ -54,6 +53,9 @@ namespace Dev.Krk.MemoryFlow.Game
 
         private Queue<Field> queuedFields;
 
+        private Vector2 offset;
+
+        private List<Field> oldFields;
 
         public int HorizontalLength
         {
@@ -71,13 +73,15 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             queuedMoves = new Queue<Vector2>(5);
             queuedFields = new Queue<Field>(5);
+
+            oldFields = new List<Field>();
         }
 
         void Start()
         {
             player.OnMoved += ProcessNextMove;
 
-            fieldMap.OnShown += startGame;
+            fieldMap.OnShown += StartGame;
             fieldMap.OnHidden += FinishGame;
 
             finish.OnFinished += FinishLevel;
@@ -85,14 +89,17 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public void Init(int flow, int level)
         {
-            fieldMap.Init(levelProvider.GetMapData(flow, level));
+            if (level == 0)
+            {
+                player.Init(Vector2.zero, fieldMap.ShowInterval, fieldMap.HideInterval);
+                playerActualPosition = player.transform.position;
+                offset = Vector2.zero;
+            }
 
-            int sx = fieldMap.HorizontalLength;
-            int sy = fieldMap.VerticalLength;
+            fieldMap.Init(levelProvider.GetMapData(flow, level), offset);
 
-            finish.Init(new Vector2(sx, sy) * Field.SIZE, fieldMap.ShowInterval, fieldMap.HideInterval);
-            player.Init(Vector2.zero, fieldMap.ShowInterval, fieldMap.HideInterval);
-            playerActualPosition = player.transform.position;
+            Vector2 mapEnd = offset + new Vector2(fieldMap.HorizontalLength, fieldMap.VerticalLength);
+            finish.Init(mapEnd * Field.SIZE, fieldMap.ShowInterval, fieldMap.HideInterval);
 
             queuedFields.Clear();
             queuedMoves.Clear();
@@ -101,19 +108,53 @@ namespace Dev.Krk.MemoryFlow.Game
 
             state = StateEnum.Idle;
             fieldMap.ShowPreview();
-            showActors();
+            ShowActors();
 
-            if(OnLevelStarted != null) OnLevelStarted();
+            if (OnLevelStarted != null) OnLevelStarted();
+        }
+
+        public void Reset()
+        {
+            Clear();
+            ResetOldFields();
+        }
+
+        private void ResetOldFields()
+        {
+            foreach (Field field in oldFields)
+            {
+                Destroy(field.gameObject);
+            }
+            oldFields.Clear();
         }
 
         public void Clear()
         {
-            fieldMap.Clear();
+            if (fieldMap.HorizontalFields != null)
+            {
+                offset.x += fieldMap.HorizontalLength;
+                offset.y += fieldMap.VerticalLength;
+
+                MoveToOld(fieldMap.HorizontalFields);
+                MoveToOld(fieldMap.VerticalFields);
+                fieldMap.Clear();
+            }
+        }
+
+        private void MoveToOld(Field[,] fields)
+        {
+            for (int y = 0; y < fields.GetLength(0); y++)
+            {
+                for (int x = 0; x < fields.GetLength(1); x++)
+                {
+                    oldFields.Add(fields[y, x]);
+                }
+            }
         }
 
         private void InitCenter()
         {
-            center.transform.position = new Vector2(fieldMap.HorizontalLength * Field.SIZE, fieldMap.VerticalLength * Field.SIZE) * 0.5f;
+            center.transform.position = (offset + new Vector2(fieldMap.HorizontalLength, fieldMap.VerticalLength) * 0.5f) * Field.SIZE;
         }
 
         public bool CanMoveLeft()
@@ -143,25 +184,25 @@ namespace Dev.Krk.MemoryFlow.Game
 
         private bool CanMoveLeft(Player player)
         {
-            Vector2 position = getFieldPosition(playerActualPosition) + Vector2.left;
+            Vector2 position = GetFieldPosition(playerActualPosition) + Vector2.left;
             return fieldMap.CanMoveLeft(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
         private bool CanMoveRight(Player player)
         {
-            Vector2 position = getFieldPosition(playerActualPosition);
+            Vector2 position = GetFieldPosition(playerActualPosition);
             return fieldMap.CanMoveRight(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
         private bool CanMoveUp(Player player)
         {
-            Vector2 position = getFieldPosition(playerActualPosition);
+            Vector2 position = GetFieldPosition(playerActualPosition);
             return fieldMap.CanMoveUp(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
         private bool CanMoveDown(Player player)
         {
-            Vector2 position = getFieldPosition(playerActualPosition) + Vector2.down;
+            Vector2 position = GetFieldPosition(playerActualPosition) + Vector2.down;
             return fieldMap.CanMoveDown(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
@@ -250,34 +291,34 @@ namespace Dev.Krk.MemoryFlow.Game
 
         private Field getLeftField(Player player)
         {
-            Vector2 position = getFieldPosition(playerActualPosition) + Vector2.left;
+            Vector2 position = GetFieldPosition(playerActualPosition) + Vector2.left;
             return fieldMap.GetHorizontalField(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
         private Field getRightField(Player player)
         {
-            Vector2 position = getFieldPosition(playerActualPosition);
+            Vector2 position = GetFieldPosition(playerActualPosition);
             return fieldMap.GetHorizontalField(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
         public Field getUpField(Player player)
         {
-            Vector2 position = getFieldPosition(playerActualPosition);
+            Vector2 position = GetFieldPosition(playerActualPosition);
             return fieldMap.GetVerticalField(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
         private Field getDownField(Player player)
         {
-            Vector2 position = getFieldPosition(playerActualPosition) + Vector2.down;
+            Vector2 position = GetFieldPosition(playerActualPosition) + Vector2.down;
             return fieldMap.GetVerticalField(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y));
         }
 
-        private Vector2 getFieldPosition(Vector2 position)
+        private Vector2 GetFieldPosition(Vector2 position)
         {
-            return position / Field.SIZE;
+            return position / Field.SIZE - offset;
         }
 
-        private void startGame()
+        private void StartGame()
         {
             if (state == StateEnum.Idle || state == StateEnum.Failed)
             {
@@ -288,17 +329,17 @@ namespace Dev.Krk.MemoryFlow.Game
         public void FinishLevel()
         {
             state = StateEnum.Finished;
-            fieldMap.Hide();
-            hideActors();
+            fieldMap.HideInvalid();
+            HideActors();
 
-            if(OnLevelCompleted != null) OnLevelCompleted();
+            if (OnLevelCompleted != null) OnLevelCompleted();
         }
 
         public void FailLevel()
         {
             state = StateEnum.Failed;
             fieldMap.Hide();
-            hideActors();
+            HideActors();
 
             if (OnLevelFailed != null) OnLevelFailed();
         }
@@ -314,13 +355,13 @@ namespace Dev.Krk.MemoryFlow.Game
             if (OnLevelEnded != null) OnLevelEnded();
         }
 
-        private void showActors()
+        private void ShowActors()
         {
             player.Show();
             finish.Show();
         }
 
-        private void hideActors()
+        private void HideActors()
         {
             player.Hide();
             finish.Hide();

@@ -31,21 +31,23 @@ public class FieldMap : MonoBehaviour
     [SerializeField]
     FieldsFactory fieldsFactory;
 
-    public void Init(FieldMapData data)
-    {
-        Clear();
+    public Field[,] HorizontalFields { get { return horizontalFields; } }
 
-        horizontalFields = fieldsFactory.Create(data.HorizontalFields, Field.TypeEnum.Horizontal);
-        verticalFields = fieldsFactory.Create(data.VerticalFields, Field.TypeEnum.Vertical);
+    public Field[,] VerticalFields { get { return verticalFields; } }
+
+    public void Init(FieldMapData data, Vector2 offset)
+    {
+        horizontalFields = fieldsFactory.Create(data.HorizontalFields, Field.TypeEnum.Horizontal, offset);
+        verticalFields = fieldsFactory.Create(data.VerticalFields, Field.TypeEnum.Vertical, offset);
     }
 
     public void Clear()
     {
-        horizontalFields = clearFields(horizontalFields);
-        verticalFields = clearFields(verticalFields);
+        horizontalFields = ClearFields(horizontalFields);
+        verticalFields = ClearFields(verticalFields);
     }
 
-    private Field[,] clearFields(Field[,] fields)
+    private Field[,] ClearFields(Field[,] fields)
     {
         if (fields != null)
         {
@@ -53,7 +55,6 @@ public class FieldMap : MonoBehaviour
             {
                 for (int x = 0; x < fields.GetLength(1); x++)
                 {
-                    Destroy(fields[y, x].gameObject); //TODO dont destroy, just hide :)
                     fields[y, x] = null;
                 }
             }
@@ -247,6 +248,37 @@ public class FieldMap : MonoBehaviour
         {
             Field field = verticalFields[x, y];
             if (all || field.Valid) field.Mask();
+        }
+    }
+
+    public void HideInvalid()
+    {
+        StartCoroutine(HideInvalidFields());
+    }
+
+    private IEnumerator HideInvalidFields()
+    {
+        int size = HorizontalLength + VerticalLength + 1;
+        for (int s = 1; s < size; s++)
+        {
+            for (int ds = 0; ds < s; ds++)
+            {
+                int y = ds;
+                int x = s - ds - 1;
+                HideInvalidFields(horizontalFields, x, y);
+                HideInvalidFields(verticalFields, x, y);
+            }
+            yield return new WaitForSeconds(hideInterval);
+        }
+        if (OnHidden != null) OnHidden();
+    }
+
+    private void HideInvalidFields(Field[,] fields, int x, int y)
+    {
+        if (x >= 0 && y >= 0 && x < fields.GetLength(0) && y < fields.GetLength(1))
+        {
+            Field field = fields[x, y];
+            if (!field.Valid) field.Hide();
         }
     }
 }

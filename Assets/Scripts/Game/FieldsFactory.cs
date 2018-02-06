@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using Dev.Krk.MemoryFlow.Game;
 using Dev.Krk.MemoryFlow.Game.State;
-using Dev.Krk.MemoryFlow.Data;
 using Dev.Krk.MemoryFlow.Game.Theme;
-using System;
 
 public class FieldsFactory : MonoBehaviour
 {
@@ -16,7 +14,7 @@ public class FieldsFactory : MonoBehaviour
     [SerializeField]
     private ThemeController themeController;
 
-    public Field[,] Create(int[,] fieldTypes, Field.TypeEnum fieldType)
+    public Field[,] Create(int[,] fieldTypes, Field.TypeEnum fieldType, Vector2 offset)
     {
         Field[,] fields = new Field[fieldTypes.GetLength(0), fieldTypes.GetLength(1)];
 
@@ -29,7 +27,7 @@ public class FieldsFactory : MonoBehaviour
                 InitThemeSprites(instance);
 
                 Field field = instance.GetComponent<Field>();
-                InitField(field, x ,y, fieldType, fieldTypes[y, x] > 0);
+                InitField(field, offset.x + x ,offset.y + y, fieldType, fieldTypes[y, x] > 0);
                 fields[y, x] = field;
             }
         }
@@ -37,7 +35,7 @@ public class FieldsFactory : MonoBehaviour
         return fields;
     }
 
-    private void InitField(Field field, int x, int y, Field.TypeEnum fieldType, bool valid)
+    private void InitField(Field field, float x, float y, Field.TypeEnum fieldType, bool valid)
     {
         Vector2 position = new Vector2(x * Field.SIZE, y * Field.SIZE);
         if (fieldType == Field.TypeEnum.Horizontal)
