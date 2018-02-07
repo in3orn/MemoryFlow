@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace Dev.Krk.MemoryFlow.Game
 {
@@ -32,9 +31,7 @@ namespace Dev.Krk.MemoryFlow.Game
                 if (state != value)
                 {
                     state = value;
-                    activeAnimator.SetInteger("state", (int)state);
-                    inactiveAnimator.SetInteger("state", (int)state);
-                    containerAnimator.SetInteger("state", (int)state);
+                    animator.SetInteger("state", (int)state);
                 }
             }
         }
@@ -67,15 +64,13 @@ namespace Dev.Krk.MemoryFlow.Game
 
         [SerializeField]
         private Transform rotator;
+        
+        private Animator animator;
 
-        [SerializeField]
-        private Animator activeAnimator;
-
-        [SerializeField]
-        private Animator inactiveAnimator;
-
-        [SerializeField]
-        private Animator containerAnimator;
+        void Awake()
+        {
+            animator = GetComponent<Animator>();
+        }
 
         public void Init(Vector2 position, bool valid)
         {
@@ -101,17 +96,17 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public void Visit(Vector3 from)
         {
-            if (valid && (State == StateEnum.Shown || State == StateEnum.Masked))
+            if (valid && State == StateEnum.Masked || State == StateEnum.Shown)
             {
                 bool reversed = from.x - transform.position.x > Field.SIZE / 4f || from.y - transform.position.y > Field.SIZE / 4f;
-                activeAnimator.SetBool("reversed", reversed);
+                animator.SetBool("reversed", reversed);
                 State = StateEnum.Visited;
             }
         }
 
         public void Break()
         {
-            if (State == StateEnum.Masked || State == StateEnum.Visited)
+            if (State == StateEnum.Masked || State == StateEnum.Shown || State == StateEnum.Visited)
             {
                 State = StateEnum.Broken;
             }
