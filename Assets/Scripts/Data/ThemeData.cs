@@ -23,6 +23,9 @@ namespace Dev.Krk.MemoryFlow.Data
         [SerializeField]
         private SoundData music;
 
+        [SerializeField]
+        private int[] shapes;
+
         public bool Locked;
 
         public int UnlockLevel;
@@ -30,6 +33,8 @@ namespace Dev.Krk.MemoryFlow.Data
         //TODO other unlocks
 
         public SoundData Music { get { return music; } }
+
+        public int[] Shapes {  get { return shapes; } }
 
         public Color GetColor(ColorEnum color)
         {

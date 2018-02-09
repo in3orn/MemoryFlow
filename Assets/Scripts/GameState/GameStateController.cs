@@ -17,13 +17,23 @@ namespace Dev.Krk.MemoryFlow.State
             Settings
         }
 
+
         public UnityAction<StateEnum> OnStateChanged;
+
 
         private delegate void StateChangeAction();
 
+        
         [Header("Settings")]
         [SerializeField]
-        private float delay;
+        private float menuDelay;
+
+        [SerializeField]
+        private float flowCompletedDelay;
+
+        [SerializeField]
+        private float levelFailedDelay;
+
 
         [Header("Sections")]
         [SerializeField]
@@ -37,6 +47,7 @@ namespace Dev.Krk.MemoryFlow.State
 
         [SerializeField]
         private ShopController shop;
+
 
         [Header("Resources")]
         [SerializeField]
@@ -78,35 +89,34 @@ namespace Dev.Krk.MemoryFlow.State
 
         public void PlayGame()
         {
-            StartCoroutine(ChangeState(StateEnum.Gameplay, game.StartNewRun));
+            StartCoroutine(ChangeState(StateEnum.Gameplay, game.StartNewRun, menuDelay));
         }
 
         public void ShowSummary()
         {
-            StartCoroutine(ChangeState(StateEnum.Summary, summary.Show));
+            StartCoroutine(ChangeState(StateEnum.Summary, summary.Show, menuDelay));
         }
 
         public void ShowSettings()
         {
-            StartCoroutine(ChangeState(StateEnum.Settings, settings.Show));
+            StartCoroutine(ChangeState(StateEnum.Settings, settings.Show, menuDelay));
         }
 
         private void ProcessFlowCompleted()
         {
-            //TODO some congratulations
-            ShowSummary();
+            StartCoroutine(ChangeState(StateEnum.Summary, summary.Show, flowCompletedDelay));
         }
 
         private void ProcessLevelFailed()
         {
-            ShowSummary();
+            StartCoroutine(ChangeState(StateEnum.Summary, summary.Show, levelFailedDelay));
         }
 
         private void ProcessResourcesInitialized()
         {
             if (scoreController.Level > 0)
             {
-                ShowSummary();
+                StartCoroutine(ChangeState(StateEnum.Summary, summary.Show, 0f));
             }
             else
             {
@@ -114,7 +124,7 @@ namespace Dev.Krk.MemoryFlow.State
             }
         }
 
-        private IEnumerator ChangeState(StateEnum state, StateChangeAction action)
+        private IEnumerator ChangeState(StateEnum state, StateChangeAction action, float delay)
         {
             if (delay > 0f) yield return new WaitForSeconds(delay);
 

@@ -3,6 +3,7 @@ using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
 using Dev.Krk.MemoryFlow.Game.Level;
+using Dev.Krk.MemoryFlow.Game.Animations;
 
 //TODO refactor - to much responsibilities
 namespace Dev.Krk.MemoryFlow.Game
@@ -50,6 +51,9 @@ namespace Dev.Krk.MemoryFlow.Game
         [SerializeField]
         private float finishDuration = 1f;
 
+        [SerializeField]
+        private LevelAnimator levelAnimator;
+
         private Vector2 playerActualPosition;
 
         private Queue<Vector2> queuedMoves;
@@ -58,7 +62,9 @@ namespace Dev.Krk.MemoryFlow.Game
 
         private Vector2 offset;
 
-        private List<Field> oldFields;
+        private List<Field> oldHorizontalFields;
+
+        private List<Field> oldVerticalFields;
 
         public int HorizontalLength
         {
@@ -77,16 +83,35 @@ namespace Dev.Krk.MemoryFlow.Game
             queuedMoves = new Queue<Vector2>(5);
             queuedFields = new Queue<Field>(5);
 
-            oldFields = new List<Field>();
+            oldHorizontalFields = new List<Field>();
+            oldVerticalFields = new List<Field>();
         }
 
-        void Start()
+        void OnEnable()
         {
             player.OnMoved += ProcessNextMove;
 
             fieldMap.OnShown += StartGame;
 
             finish.OnFinished += FinishLevel;
+        }
+
+        void OnDisable()
+        {
+            if (player != null)
+            {
+                player.OnMoved -= ProcessNextMove;
+            }
+
+            if (fieldMap != null)
+            {
+                fieldMap.OnShown -= StartGame;
+            }
+
+            if (finish != null)
+            {
+                finish.OnFinished -= FinishLevel;
+            }
         }
 
         public void Init(int flow, int level)
@@ -122,11 +147,17 @@ namespace Dev.Krk.MemoryFlow.Game
 
         private void ResetOldFields()
         {
-            foreach (Field field in oldFields)
+            foreach (Field field in oldHorizontalFields)
             {
                 Destroy(field.gameObject);
             }
-            oldFields.Clear();
+            oldHorizontalFields.Clear();
+
+            foreach (Field field in oldVerticalFields)
+            {
+                Destroy(field.gameObject);
+            }
+            oldVerticalFields.Clear();
         }
 
         public void Clear()
@@ -135,12 +166,12 @@ namespace Dev.Krk.MemoryFlow.Game
             {
                 offset.x += fieldMap.HorizontalLength;
                 offset.y += fieldMap.VerticalLength;
-                
+
                 fieldMap.Clear();
             }
         }
 
-        private void MoveToOld(Field[,] fields)
+        private void MoveToOld(Field[,] fields, List<Field> oldFields)
         {
             for (int y = 0; y < fields.GetLength(0); y++)
             {
@@ -340,8 +371,8 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             state = StateEnum.Finished;
 
-            MoveToOld(fieldMap.HorizontalFields);
-            MoveToOld(fieldMap.VerticalFields);
+            MoveToOld(fieldMap.HorizontalFields, oldHorizontalFields);
+            MoveToOld(fieldMap.VerticalFields, oldVerticalFields);
 
             fieldMap.HideNotValid();
             HideActors();
@@ -353,10 +384,11 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             state = StateEnum.Failed;
 
-            MoveToOld(fieldMap.HorizontalFields);
-            MoveToOld(fieldMap.VerticalFields);
+            MoveToOld(fieldMap.HorizontalFields, oldHorizontalFields);
+            MoveToOld(fieldMap.VerticalFields, oldVerticalFields);
 
-            StartCoroutine(BreakValidFields());
+            int size = fieldMap.HorizontalLength + fieldMap.VerticalLength + (int)offset.x + (int)offset.y + 1;
+            levelAnimator.FailLevel(oldHorizontalFields, oldVerticalFields, size);
 
             fieldMap.HideNotValid();
             HideActors();
@@ -369,9 +401,13 @@ namespace Dev.Krk.MemoryFlow.Game
 
         public void CompleteFlow()
         {
-            StartCoroutine(CreateShape());
+            int size = fieldMap.HorizontalLength + fieldMap.VerticalLength + (int)offset.x + (int)offset.y + 1;
+            levelAnimator.CompleteFlow(oldHorizontalFields, oldVerticalFields, size);
 
             center.transform.position = Vector3.zero;
+
+            if (OnFlowCompleted != null)
+                OnFlowCompleted();
         }
 
         private void ShowActors()
@@ -384,77 +420,6 @@ namespace Dev.Krk.MemoryFlow.Game
         {
             player.Hide();
             finish.Hide();
-        }
-
-        private IEnumerator BreakValidFields()
-        {
-            int size = fieldMap.HorizontalLength + fieldMap.VerticalLength + (int)offset.x + (int)offset.y + 1;
-            for (int s = size - 1; s > 0; s--)
-            {
-                for (int ds = 0; ds < s; ds++)
-                {
-                    int y = ds;
-                    int x = s - ds - 1;
-                    foreach (var field in oldFields)
-                    {
-                        if (!field.Broken)
-                        {
-                            Vector2 pos = field.transform.position / Field.SIZE;
-                            if ((int)pos.x == x && (int)pos.y == y) field.Break();
-                        }
-                    }
-                }
-                yield return new WaitForSeconds(0.5f / size);
-            }
-        }
-
-        private IEnumerator CreateShape()
-        {
-            int size = fieldMap.HorizontalLength + fieldMap.VerticalLength + (int)offset.x + (int)offset.y + 1;
-            for (int s = size - 1; s > 0; s--)
-            {
-                for (int ds = 0; ds < s; ds++)
-                {
-                    int y = ds;
-                    int x = s - ds - 1;
-                    foreach (var field in oldFields)
-                    {
-                        Vector2 pos = field.transform.position / Field.SIZE;
-                        if ((int)pos.x == x && (int)pos.y == y && field.Valid)
-                        {
-                            StartCoroutine(MoveFieldTo(field, new Vector2(-3f + Random.value * 6f, -3f + Random.value * 6f)));
-                        }
-                    }
-                }
-                yield return new WaitForSeconds(0.5f / size);
-            }
-
-            yield return new WaitForSeconds(1f);
-            
-            foreach (var field in oldFields)
-            {
-                field.Hide();
-                yield return new WaitForSeconds(0.5f / size);
-            }
-
-            if (OnFlowCompleted != null)
-                OnFlowCompleted();
-        }
-
-        private IEnumerator MoveFieldTo(Field field, Vector3 endPosition)
-        {
-            float duration = 1f;
-            float time = 0;
-            Vector3 startPosition = field.transform.position;
-            while (time < duration)
-            {
-                field.transform.position = Vector3.Lerp(startPosition, endPosition, time / duration);
-
-                time += Time.deltaTime;
-                yield return null;
-            }
-
-            field.transform.position = endPosition;
         }
     }
 }
