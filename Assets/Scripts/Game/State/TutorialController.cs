@@ -1,70 +1,106 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Dev.Krk.MemoryFlow.Game.State
 {
     public class TutorialController : MonoBehaviour
     {
+        private enum StateEnum
+        {
+            Hidden = 0,
+            SwipeRight,
+            SwipeUp,
+            NextLevel,
+            RememberPath
+        }
+
+
+        [Header("Settings")]
         [SerializeField]
         private float delay;
 
         [SerializeField]
         Animator[] animators;
 
+
+        [Header("Dependencies")]
+        [SerializeField]
+        private LevelController levelController;
+
+        [SerializeField]
+        private ScoreController scoreController;
+
+
         private float startTime;
 
-        private bool activated;
+        private bool running;
 
-        private bool shown;
+        private StateEnum state;
+
+        private StateEnum State
+        {
+            get { return state; }
+            set
+            {
+                if (state != value)
+                {
+                    state = value;
+
+                    foreach (var animator in animators)
+                        animator.SetInteger("state", (int)state);
+                }
+            }
+        }
+
 
         void Start()
         {
         }
 
-        void Update()
+
+        void OnEnable()
         {
-            if (activated && !shown && Time.time - startTime > delay)
+            levelController.OnLevelStarted += ProcessLevelStarted;
+            levelController.OnPlayerMoved += ProcessPlayerMoved;
+        }
+
+        void OnDisable()
+        {
+            if (levelController != null)
             {
-                Show();
+                levelController.OnLevelStarted -= ProcessLevelStarted;
+                levelController.OnPlayerMoved -= ProcessPlayerMoved;
             }
         }
 
-        public void Activate()
+        private void ProcessLevelStarted()
         {
-            if(!activated)
+            if (scoreController.Level <= 0)
             {
-                startTime = Time.time;
-                activated = true;
+                if (State == StateEnum.Hidden || State == StateEnum.NextLevel)
+                {
+                    State++;
+                }
             }
         }
 
-        public void Deactivate()
+        private void ProcessPlayerMoved(Vector2 direction)
         {
-            if(activated)
+            if (scoreController.Level <= 0)
             {
-                activated = false;
-                Hide();
-            }
-        }
-
-        public void Show()
-        {
-            if (!shown)
-            {
-                shown = true;
-                foreach (var animator in animators)
-                    animator.SetBool("shown", shown);
-            }
-        }
-
-        public void Hide()
-        {
-            startTime = Time.time;
-
-            if (shown)
-            {
-                shown = false;
-                foreach (var animator in animators)
-                    animator.SetBool("shown", shown);
+                if (State == StateEnum.SwipeRight && direction == Vector2.right)
+                {
+                    State++;
+                }
+                else if (State == StateEnum.SwipeUp && direction == Vector2.up)
+                {
+                    State++;
+                }
+                else if(State == StateEnum.RememberPath)
+                {
+                    State = 0;
+                    enabled = false;
+                }
             }
         }
     }

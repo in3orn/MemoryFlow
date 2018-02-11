@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Dev.Krk.MemoryFlow.Game.Level;
 using Dev.Krk.MemoryFlow.Game.Animations;
+using Dev.Krk.MemoryFlow.Game.State;
 
 //TODO refactor - to much responsibilities
 namespace Dev.Krk.MemoryFlow.Game
@@ -53,6 +54,7 @@ namespace Dev.Krk.MemoryFlow.Game
 
         [SerializeField]
         private LevelAnimator levelAnimator;
+
 
         private Vector2 playerActualPosition;
 

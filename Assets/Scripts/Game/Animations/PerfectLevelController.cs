@@ -6,12 +6,7 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
 {
     public class PerfectLevelController : MonoBehaviour
     {
-        [SerializeField]
-        private LevelController levelController;
-
-        [SerializeField]
-        private LivesController livesController;
-
+        [Header("Settings")]
         [SerializeField]
         private Animator animator;
 
@@ -21,9 +16,22 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
         [SerializeField]
         private string[] completedTexts;
 
+
+        [Header("Dependencies")]
+        [SerializeField]
+        private LevelController levelController;
+
+        [SerializeField]
+        private LivesController livesController;
+
+        [SerializeField]
+        private ScoreController scoreController;
+
+
         private bool perfect;
 
         private int index;
+
 
         void OnEnable()
         {
@@ -54,7 +62,7 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
 
         private void ProcessLevelCompleted()
         {
-            if (perfect)
+            if (perfect && (scoreController.Level > 0 || scoreController.CurrentScore > 2))
             {
                 index += Random.Range(1, completedTexts.Length-1);
                 index %= completedTexts.Length;

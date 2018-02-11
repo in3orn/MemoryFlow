@@ -10,6 +10,7 @@ namespace Dev.Krk.MemoryFlow.Game
         public UnityAction OnFlowCompleted;
         public UnityAction OnLevelFailed;
 
+
         [SerializeField]
         private LevelController levelController;
         
@@ -22,8 +23,6 @@ namespace Dev.Krk.MemoryFlow.Game
         [SerializeField]
         private LivesController livesController;
 
-        [SerializeField]
-        private TutorialController tutorialController;
 
         void Start()
         {
@@ -35,8 +34,6 @@ namespace Dev.Krk.MemoryFlow.Game
             levelController.OnLevelFailed += ProcessLevelFailed;
 
             levelController.OnFlowCompleted += ProcessFlowCompleted;
-
-            levelController.OnPlayerMoved += ProcessPlayerMoved;
             levelController.OnPlayerFailed += ProcessPlayerDied;
         }
 
@@ -48,8 +45,6 @@ namespace Dev.Krk.MemoryFlow.Game
                 levelController.OnLevelFailed -= ProcessLevelFailed;
 
                 levelController.OnFlowCompleted -= ProcessFlowCompleted;
-
-                levelController.OnPlayerMoved -= ProcessPlayerMoved;
                 levelController.OnPlayerFailed -= ProcessPlayerDied;
             }
         }
@@ -60,14 +55,9 @@ namespace Dev.Krk.MemoryFlow.Game
             StartLevel();
         }
 
-        private void ProcessPlayerMoved(Vector2 vector)
-        {
-            tutorialController.Hide();
-        }
 
         public void ProcessLevelFailed()
         {
-            tutorialController.Deactivate();
             progressController.ResetFlow(scoreController.Level);
 
             if (OnLevelFailed != null) OnLevelFailed();
@@ -75,7 +65,6 @@ namespace Dev.Krk.MemoryFlow.Game
 
         private void ProcessLevelCompleted()
         {
-            tutorialController.Deactivate();
             scoreController.IncreaseScore();
             progressController.NextMap();
 
@@ -121,7 +110,6 @@ namespace Dev.Krk.MemoryFlow.Game
 
         private void StartLevel()
         {
-            tutorialController.Activate();
             levelController.Clear();
             levelController.Init(progressController.Flow, progressController.Map);
         }
