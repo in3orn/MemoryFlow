@@ -74,12 +74,8 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
                     {
                         if (CanUpdate(field, x, y))
                         {
-
                             updated.Add(field);
-                            if (hor < shapeData.HorizontalFields.Length)
-                                Move(field, shapeData.HorizontalFields[hor++]);
-                            else
-                                field.Hide();
+                            Move(field, shapeData.HorizontalFields[hor++ % shapeData.HorizontalFields.Length]);
                         }
                     }
 
@@ -88,11 +84,7 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
                         if (CanUpdate(field, x, y))
                         {
                             updated.Add(field);
-
-                            if (ver < shapeData.VerticalFields.Length)
-                                Move(field, shapeData.VerticalFields[ver++]);
-                            else
-                                field.Hide();
+                            Move(field, shapeData.VerticalFields[ver++ % shapeData.VerticalFields.Length]);
                         }
                     }
                 }
@@ -105,20 +97,12 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
             updated.Clear();
 
             foreach (var field in horizontalFields)
-            {
                 field.Hide();
 
-                yield return new WaitForSeconds(hideInterval / size / 2f);
-            }
+            yield return new WaitForSeconds(hideInterval);
 
             foreach (var field in verticalFields)
-            {
                 field.Hide();
-
-                yield return new WaitForSeconds(hideInterval / size / 2f);
-            }
-
-            //TODO better one :)
         }
 
         private bool CanUpdate(Field field, int x, int y)
