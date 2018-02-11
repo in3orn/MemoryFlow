@@ -129,7 +129,7 @@ namespace Dev.Krk.MemoryFlow.Game.Animations
 
         private void Move(Field field, PointData target)
         {
-            StartCoroutine(MoveFieldTo(field, new Vector2(target.X, target.Y)));
+            StartCoroutine(MoveFieldTo(field, new Vector2(target.X * Field.SIZE, target.Y * Field.SIZE)));
         }
 
         private IEnumerator MoveFieldTo(Field field, Vector3 endPosition)

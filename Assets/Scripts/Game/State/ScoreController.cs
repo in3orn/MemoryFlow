@@ -98,7 +98,8 @@ namespace Dev.Krk.MemoryFlow.Game.State
             {
                 levelScore -= maxLevelScore;
                 level++;
-                UpdateMaxLevelScore();
+
+                maxLevelScore = GetMaxLevelScore();
 
                 if (OnLevelUpdated != null) OnLevelUpdated();
             }
@@ -115,12 +116,20 @@ namespace Dev.Krk.MemoryFlow.Game.State
             level = PlayerPrefs.GetInt(LEVEL);
             levelScore = PlayerPrefs.GetInt(SCORE);
 
-            UpdateMaxLevelScore();
+            maxLevelScore = GetMaxLevelScore();
         }
 
-        private void UpdateMaxLevelScore()
+        private int GetMaxLevelScore()
         {
-            maxLevelScore = (level + 1) * 10; //TODO some more sophisticated function :P
+            if (level <= 0) return 5;
+            if (level <= 1) return 7;
+            if (level <= 2) return 8;
+            if (level <= 3) return 9;
+            if (level < 10) return 10;
+            if (level < 25) return 20;
+            if (level < 50) return 30;
+            if (level < 100) return 40;
+            return 50; //TODO some more sophisticated function :P
         }
     }
 }

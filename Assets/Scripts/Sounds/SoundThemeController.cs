@@ -13,12 +13,15 @@ namespace Dev.Krk.MemoryFlow.Sounds
         [SerializeField]
         private AudioSource musicSource;
 
+
         void Start()
         {
         }
 
+
         void OnEnable()
         {
+            themeController.OnInitialized += ProcessThemeUpdated;
             themeController.OnThemeUpdated += ProcessThemeUpdated;
         }
 
@@ -26,6 +29,7 @@ namespace Dev.Krk.MemoryFlow.Sounds
         {
             if (themeController != null)
             {
+                themeController.OnInitialized -= ProcessThemeUpdated;
                 themeController.OnThemeUpdated -= ProcessThemeUpdated;
             }
         }

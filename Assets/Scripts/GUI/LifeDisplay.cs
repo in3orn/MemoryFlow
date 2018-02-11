@@ -6,15 +6,22 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 {
     public class LifeDisplay : MonoBehaviour
     {
+        [Header("Settings")]
+        [SerializeField]
+        private int lifeIndex;
+
+        [Header("Dependencies")]
         [SerializeField]
         private LivesController livesController;
 
         [SerializeField]
-        private int lifeIndex;
+        private ScoreController scoreController;
+
 
         private Animator animator;
 
         private bool shown;
+
 
         void Awake()
         {
@@ -25,7 +32,8 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
         {
             UpdateLife();
         }
-        
+
+
         void OnEnable()
         {
             livesController.OnLivesUpdated += UpdateLife;
@@ -33,7 +41,7 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 
         void OnDisable()
         {
-            if(livesController != null)
+            if (livesController != null)
             {
                 livesController.OnLivesUpdated -= UpdateLife;
             }
@@ -41,12 +49,12 @@ namespace Dev.Krk.MemoryFlow.Game.GUI
 
         private void UpdateLife()
         {
-            if (!shown && livesController.Lives > lifeIndex)
+            if (!shown && scoreController.Level > 0 && livesController.Lives > lifeIndex)
             {
                 animator.SetTrigger("Show");
                 shown = true;
             }
-            else if(shown && livesController.Lives <= lifeIndex)
+            else if (shown && livesController.Lives <= lifeIndex)
             {
                 animator.SetTrigger("Hide");
                 shown = false;
